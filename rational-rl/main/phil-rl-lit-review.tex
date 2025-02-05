@@ -1,0 +1,56 @@
+\section{Philosophical work on RL}
+
+Philosophers have paid scant attention to reinforcement learning.
+In this section, we summarize the extant literature on the subject.
+Some of the literature focuses on the implications of RL for our understanding of the (human) mind, while some use tools from the philosophy of mind and action to elucidate key concepts in RL, especially as found in machine learning.
+Finally, some authors place RL in the larger context of decision theory.
+
+\subsection{RL and value}
+In a pair of papers, Julia Hass argues that the success of the reinforcement learning approach in cognitive science holds lessons for our understanding of the mind.
+
+[CITE: Haas 2022] argues that the notions of \emph{reward} and \emph{expected value} that lie at the core of the reinforcement learning framework can be used to analyze the folk-psychological notion of \emph{desire}.
+To desire something, according to Haas [CITE: Haas in prep], is to subpersonally attribute a subjective reward or expected value to that thing.
+The notions of reward and expected value Hass uses are supposed to be the \emph{lingua franca} of reinforcement learning.
+Thus, if Haas's thesis is correct, the reinforcement learning framework offers a powerful tool for understanding a psychological state of perennial philosophical interest.
+
+Haas also draws on the success of reinforcement learning models of selection to argue that evaluation is fundamental to the mind.
+Selection encompasses a broad range of cognitive tasks in which the mind must select from among a set of alternatives.
+For example, in visual perception, the mind must decide where---and on what features---to focus its attention.
+In action-selection, the mind must select one among a set of alternative actions.
+[CITE: studies]
+And so on.
+
+Many such selection tasks have been analyzed through the lens of reinforcement learning.
+In such models, the reinforcement learning agent must choose among several options.
+In many cases, the agent learns to maximize expected return by maintaining a representation of each option's value (perhaps relative to a given state).
+Options are then selected on the basis of their estimated values.
+
+Assigning value to options is therefore a core component of many successful models of various core mental processes.
+In light of the explanatory success of such models, Haas argues that a wide range of basic cognitive processes implicate valuation.
+
+\subsection{RL and action}
+
+In a pair of papers, Butlin has argued that reinforcement learning systems are agents.
+Butlin draws on [CITE: Dretske]'s theory of action to develop an account of \emph{minimal action}.
+On this minimal conception, behavior must satisfy two conditions to be an action: first, it must be selectively produced in response to certain environmental conditions, where this selectivity is the result of a learning process.
+Second, the learning process must function to produce behavior that is instrumentally valuable.
+That is, the instrumental value of the behavior must explain why it was learned, and this explanation must ``go through'' the learning process.
+
+This conception of action is minimal in that it does not require any of the sophisticated agential capacities that (sometime) accompany human action, such as deliberation, planning, coordination, and so on.
+As such, 
+Still, since behavior can only be instrumentally valuable relative to a goal, this minimal conception requires actions to be goal-directed.
+Indeed, Butlin also characterizes actions as activities subject to norms, where the relevant norms derive from goals rather than functions. 
+Minimal actions are thereby set apart from merely functional behavior, such as the beating of a heart.
+The latter has a function---to pump blood---but serves no goal.
+
+Butlin contends that reinforcement learning systems satisfy the conditions on minimal agency.
+It is relatively uncontroversial that they satisfy the first condition.
+Butlin argues that they satisfy the second condition because the learning algorithm of a reinforcement learner functions to produce instrumentally valuable behavior.
+Indeed, almost all reinforcement learning systems select actions that maximize expected value (unless they are exploring).
+Actions with high expected value are expected to contribute most to the long term goal of maximizing cumulative reward.
+Thus, reinforcement learning systems choose actions in light of their positive contribution to long-term goals: they act instrumentally.
+
+Butlin's account has a number of interesting philosophical consequences.
+First, it implies that supervised learning systems, in contrast to reinforcement learning systems, are not agents.
+Supervised learning algorithms learn by comparing their output on a given input to the correct output.
+
