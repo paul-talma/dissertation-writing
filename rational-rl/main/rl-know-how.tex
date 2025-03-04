@@ -1,0 +1,81 @@
+\section{RL and know-how}
+
+The nature of know-how has occupied a prominent place in contemporary philosophy of mind and action.
+Much of the literature focuses on a question raised by [CITE: Ryle]'s criticisms of \emph{intellectualism}, the view that know-how centrally involves a kind of propositional knowledge.
+\emph{Anti-intellectualists} (such as Ryle) deny this.
+My goal in this section [paper?] is to demonstrate that computational reinforcement learning provides a range of tools for probing the nature of knowledge-how.
+I will also argue that it provides compelling counterexamples to the intellectualist thesis.
+But I think that the former contribution is more important: our practical capacities exhibit rich and variegated structures; it matters more to understand these structures on their own terms than to decide whether know-how is, always and everywhere, a form of know-that.
+So, at any rate, I will argue.
+Still, the debate between intellectualists and anti-intellectualists provides a nice place to start, so I will begin by laying out the two positions.
+Then, I will introduce the basics of reinforcement learning, sharing technical details on a need-to-know basis.
+With those basics on the table, I will illustrate some central uses of reinforcement learning in the cognitive and neural sciences, with an eye to their bearing on the intellectualist position.
+After explaining why I take these cases to refute intellectualism and considering rejoinders, I go on to illustrate how computational concepts from reinforcement learning can shed light on various aspects of know-how, abilities, and skills, such as their relation to chunking and motor schemata, the distinction between habitual and goal-directed behavior, the question of automatization, and ...
+
+\section{Intellectualism and Anti-Intellectualism}
+
+In this section, I will endeavor to clarify the two central positions.
+This is not a trivial task.
+The literature has revolved around three concepts: \emph{skill}, \emph{ability}, and \emph{know-how}, and their relation to propositional knowledge.
+Various authors seek to identify one or more of these phenomena.
+For example, [CITE: Noe], following [CITE: Ryle], maintains that know-how and ability are one.
+[CITE: Stanley and Williamson] deny this, and maintain instead that know-how is a species of propositional knowledge (which anti-intellectualists deny).
+Some, like [CITE: Stanley and Krakauer], identify skill and know-how but divorce them from abilities, holding that one can know how to do something without being able to do it.
+And so on.
+It is therefore difficult to characterize the subject matter in a theory-neutral way (that is, in a way which wouldn't draw objections from at least one party).
+As such, I will talk of know-how, skills, and abilities more or less interchangeably, but without wishing to imply anythign about their identity or distinctness. 
+Let us proceed by way of examples.
+
+Examples of the phenomena in question include my knowing how to swim, how to write a philosophy paper, how to get to the grocery store, how to play a video game, how to count to 10, and how to play the bass.
+To these we can add that Alva No\"e's dog knows how to catch a Frisbee [CITE: Noe, 289] and that trained rats know how to navigate out of a maze.
+(Note that even [CITE: Stanley and Williamson], the most promiment contemporary proponents of intellectualism, are happy to ascribe know-how to dogs.)
+
+The first thing that should strike us about this collection of examples is its diversity: it is \emph{ex ante} implausible, I think, that all of these examples fall under the same mental kind.
+Indeed, as I shall argue below, they do not: although there are good reasons to lump them together in ordinary talk, they are underwritten by importantly different cognitive mechanisms.
+Ordinary talk is (here as elsewhere) no guide to mental organization.
+
+Be that as it may, here is the intellectualist thesis:
+\begin{quote}
+	\textsc{Intellectualism:} To know how to $\varphi$ is to know, for some way $w$ of doing $\varphi$, that $w$ is a way of doing $\varphi$.
+\end{quote}
+($\varphi$ ranges over actions.)
+Note that knowing that $w$ is a way of doing $\varphi$ is knowledge of a proposition: it entails holding a propositional attitude (belief) toward the proposition that $w$ is a way to do $\varphi$.
+Many intellectualists add that the proposition in question must feature the way $w$ under a \emph{practical mode of presentation} [CITE: Stanley and Williamson, Pavese].
+Practical modes of presentation are presented as a species of Fregean modes of presentation.
+Modes of presentation support a fine-grained notion of mental content of the kind suitable for psychological and rational explanation [CITE: Fodor, Burge, Rescorla].
+Practical modes of presentation index representational content to the exercise of practical capacities.
+Although (unlike some anti-intellectualists [CITE: Noe]) we do not consider this notion irredeemably obscure, our argument will not turn on it, and so we omit it from our discussion.
+
+\textsc{Intellectualism} is, as stated, a very strong thesis.
+It implies not only that knowing how to do something requires a capacity for propositional thought, but also the possession of propositional \emph{knowledge}.
+Moreover, having such knowledge is not merely necessary for possessing the relevant know how.
+It is constitutive of (and hence sufficient for) know-how.
+Not all who call themselves ``intellectualists'' will sign on to the thesis in its full strength ([CITE: XXXX], for example, requires mere belief rather than knowledge, and at times [CITE: Stanley and Krakauer] seem to think that propositional knowledge is merely necessary for, but perhaps not constitutive of, know-how).
+But, again, our arguments below will not turn on these features of the view, so we can let them stand.
+
+It \emph{is} important, however, to distinguish \textsc{Intellectualism} from a weaker thesis: 
+\begin{quote}
+	\textsc{Way-Representationalism:} knowing how to $\varphi$ requires (or consists in) having some representation, whether propositionally structured or not, of a way to do $\varphi$.
+\end{quote}
+This weaker thesis does not require knowers-how to be capable of propositional thought, though we may add that the way in question must be represented via a practical mode of presentation.
+Although I will argue this view should also be rejected, not all considerations against \textsc{Intellectualism} will apply to \textsc{Way-Representationalism}.
+
+Finally, we must also distinguish the two foregoing views from
+\begin{quote}
+	\textsc{Representationalism:} knowledge-how requires some representations or other.
+\end{quote}
+This view is much weaker.
+I do not know whether it is true, but I will suggest some tools for assessing it below.
+%Supposing that at least some know-how is underwritten by representations, however, the important questions will concern the differences between the various cognitive mechanisms underpinning 
+
+Let me foreshadow my argument before introducing the necessary background.
+Drawing on case studies from computational cognitive science, I will argue that a wide range practical capacities in humans and animals---in particular, motor control and navigation---are explained by reinforcement learning.
+Although such explanations are, in principle, compatible with \textsc{Intellectualism}, in practice they are not.
+As I will argue, in cases of \emph{model-based} reinforcement learning, the representations invoked to explain human and animal know-how are not propositionally structured.
+Hence, this know-how does not consist in propositional knowledge.
+These examples will suffice to refute \textsc{Intellectualism}.
+In addition, I will argue that the representations invoked to explain this know-how are not representations of ways of doing the relevant actions.
+Thus, these examples also serve to refute \textsc{Way-Representationalism}.
+In a later, more speculative section, I consider the bearing of \emph{model-free} reinforcement learning explanations on \textsc{Representationalism}.
+[Not sure what I'll say about that yet.]
+

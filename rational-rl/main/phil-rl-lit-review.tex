@@ -28,6 +28,10 @@ Options are then selected on the basis of their estimated values.
 Assigning value to options is therefore a core component of many successful models of various core mental processes.
 In light of the explanatory success of such models, Haas argues that a wide range of basic cognitive processes implicate valuation.
 
+\subsection{RL and curiosity}
+
+[Explain Nagel's work on RL and curiosity]
+
 \subsection{RL and action}
 
 In a pair of papers, Butlin has argued that reinforcement learning systems are agents.
@@ -36,21 +40,142 @@ On this minimal conception, behavior must satisfy two conditions to be an action
 Second, the learning process must function to produce behavior that is instrumentally valuable.
 That is, the instrumental value of the behavior must explain why it was learned, and this explanation must ``go through'' the learning process.
 
-This conception of action is minimal in that it does not require any of the sophisticated agential capacities that (sometime) accompany human action, such as deliberation, planning, coordination, and so on.
-As such, 
+This conception of action is minimal in that it does not require any of the sophisticated agential capacities that (sometimes) accompany human action, such as deliberation, planning, coordination, and so on.
+As such, the behavior of primitive organisms and artificial machines is candidate for minimal action.
 Still, since behavior can only be instrumentally valuable relative to a goal, this minimal conception requires actions to be goal-directed.
-Indeed, Butlin also characterizes actions as activities subject to norms, where the relevant norms derive from goals rather than functions. 
+Indeed, Butlin also characterizes actions as activities subject to norms, where the relevant norms derive from goals rather than functions (the two characterizations are supposed to be coextensive).
 Minimal actions are thereby set apart from merely functional behavior, such as the beating of a heart.
 The latter has a function---to pump blood---but serves no goal.
 
-Butlin contends that reinforcement learning systems satisfy the conditions on minimal agency.
-It is relatively uncontroversial that they satisfy the first condition.
-Butlin argues that they satisfy the second condition because the learning algorithm of a reinforcement learner functions to produce instrumentally valuable behavior.
-Indeed, almost all reinforcement learning systems select actions that maximize expected value (unless they are exploring).
+Of course, the distinction between functions and goals invites explication.
+Butlin adopts the \emph{selected-effects} theory of biological function [CITE: Garson 2016].
+This theory maintains that a component of an organism functions to perform some activity just in case that component was selected to perform that activity.
+A component is selected to perform an activity just in case its performance of that activity explains its stable, continued existence.
+Thus, the function of a component is to bring about behavior that has previously caused this component to be stabilized. 
+
+By contrast with functions, which are set by processes of selection, goals are set by learning processes.
+\begin{quote}
+	Minimal agency requires learning to produce outputs selectively for their contributions to good performance over an episode of interaction with the environment.
+
+	\dots
+
+	When systems undergo learning which is sensitive to the contributions of outputs to performance over episodes, and promotes performance of a particular kind, they come to pursue the goal of good performance through their outputs, and their activity can be evaluated according to whether it is conducive to this goal.
+
+	\dots
+
+	They have goals as opposed to functions.
+
+	\hfill [CITE Butlin 2024: 27]
+\end{quote}
+It is not immediately clear how this characterization distinguishes functions from goals.
+For example, the heart also produces outputs (i.e., beats) for their contribution to good performance (i.e. survival) over an episode of interaction with the environment (i.e. a lifetime).
+Yet Butlin insists that hearts merely function to pump blood, and do not have pumping blood as a goal.
+The main difference seems to be that the heart's beating is the product of a history of selection, but does not involve learning.
+Not any kind of learning will ground goals, however:
+\begin{quote}
+	For a biological or artificial system to satisfy this account of agency the way in which it learns must allow information about subsequent performance to influence the probability that an output will be repeated, under environmental conditions of a given kind.
+
+	\hfill [CITE Butlin 2024: 28]
+\end{quote}
+Thus, the learning process must be sensitive to a given output's contribution to subsequent performance: learned behavior must be learned because of its contribution to future performance.
+In summary, agency requires behavior to be the product of a learning process sensitive to instrumental value.
+
+I note in passing that some cases of behavior that seem clearly agential, such as a chick's pecking behavior, are plausibly not learned but instead innate (``grown,'' to use Chomsky's phrase).
+Other cases of minimal agency, such as paramecia's locomotion, are even more clearly not the product of a learning process (though their status as agents is perhaps negotiable).
+Butlin's account, however, wrongly classifies such behavior as non-agential.
+It is also unclear how Butlin's account fares in cases of one-off actions.
+The behavior of someone throwing a dart at a dartboard for the first time is not the product of a learning process (at least, not in any direct sense), yet it is clearly agential.
+Admittedly, this is not a case of minimal action.
+But if learning is not required for more sophisticated kinds of actions, why should it be required for minimal actions?
+[Perhaps because in the case of high-level actions, goals can be set by intentions, whereas no such intentions are available for minimal actions, in which case a history of learning has to step in?]
+
+Setting aside these concerns about Butlin's notion of minimal agence, we turn to his contention that reinforcement learning systems are agents.
+Recall that the first condition on minimal agency is that the system must learn to selectively produce behavior.
+Barring concerns about whether artificial systems can learn anything at all (concerns I do not share), reinforcement learners clearly meet this condition.
+The second condition requires this learning process to be sensitive to instrumental value.
+Again, it is reasonably clear that this holds of reinforcement learners.
+Almost all reinforcement learning algorithms function to increase the probability that actions with high expected value are selected.
+That is, they do not merely happen to increase the probability of high-value actions.
+Rather, they increase the probability of certain actions because they have a high expected value.
 Actions with high expected value are expected to contribute most to the long term goal of maximizing cumulative reward.
-Thus, reinforcement learning systems choose actions in light of their positive contribution to long-term goals: they act instrumentally.
+Thus, the learning algorithm of a reinforcement learner selectively reinforces actions according to their expected contribution to long-term performance: they are sensitive to instrumental value.
+Thus, reinforcement learners are minimal agents.
 
 Butlin's account has a number of interesting philosophical consequences.
 First, it implies that supervised learning systems, in contrast to reinforcement learning systems, are not agents.
 Supervised learning algorithms learn by comparing their output on a given input to the correct output.
+If their output is incorrect, their internal state is modified so as to increase the probability of producing the correct output.
+Crucially, the feedback given to a supervised learner does not include the identity of the next input (as it does in reinforcement learning).
+Thus, a supervised learner cannot learn to produce a certain output because of its influence on the downstream sequence of inputs it will receive (indeed, its outputs typically \emph{have} no such influence).
+As a result, the notion of instrumental value does not apply to supervised learner.
+A fortiori, their learning algorithm cannot be sensitive to the instrumental value of their outputs, and hence they are not agents.
 
+Here I register a skeptical comment.
+It is possible to view any supervised learning problem as a special case of a reinforcement learning problem.
+Let me illustrate this with a binary classification problem for simplicity (the point applies to all forms of supervised learning).
+In such a task, the learner's task is to learn a target function $f : \mathcal X \rightarrow \{0, 1 \}$ that provides the true classification for each instance $\vec x \in \mathcal X$.
+To learn this function, the learner has access to some training data $\mathcal D = \{ (\vec x_1, y_1), \dots, (\vec x_N, y_N) \}$ consisting of pairs of samples $\vec x_i$ along with their correct classification $y_i = f(\vec x_i)$.
+The goal of the supervised learner is to achieve the best performance possible on this training data.
+There are various ways of measuring performance; one popular way is to simply count the number of training examples which the learner misclassifies.
+This supervised learning problem can be construed as a reinforcement learning problem as follows.
+Each sample $\vec x_i$ corresponds to a state in the reinforcement learner's MDP.
+The agent's actions, in each state, are to output either $0$ or $1$.
+The reward for each action is given by $f(\vec x_i)$.
+After each action, the state updates to $\vec x_{i + 1}$ (or the episode ends, or wraps back around to $x_1$, if $i = N$).
+Clearly, maximizing expected reward over the course of an episode is equivalent to minimizing the number of misclassified states.
+Thus, the supervised learning problem is also a reinforcement learning problem.
+
+Of course, there is little point in modeling a supervised learning problem in this way.
+MDP are particularly suited to model situations in which the agent's actions have an effect on the environment.
+But precisely this feature is lacking from this example: both available actions in each state lead to the same next state.
+Nonetheless, it does not seem out of place to talk of a supervised learning system having as its goal correct classification, and the reinforcement learning framework seems to support this attribution through such hackneyed cases.
+Such examples therefore put pressure on Butlin's contention that supervised learners are not agents.
+
+The existence of active supervised learners exerts additional pressure on Butlin's thesis.
+Active learning is a sub-field of supervised learning in which the data is not presented to the learner in a default, or random sequence, as is done in ``vanilla'' supervised learning.
+Instead, the supervised learner ``decides'' which training example to look at next.
+This decision is often driven by information-theoretic considerations: the model asks about examples which it is most uncertain about [CITE: Gureckis, Murphy].
+As such, active learning models interact with their environment in a way that impacts the distribution of examples they see.
+They therefore seem to meet Butlin's criteria for agency.
+Yet is it not clear that they are agents.
+
+Butlin also uses his framework to argue that model-based reinforcement learning agents are capable of acting for reasons.
+Butlin adapts Mantel's [CITE: Mantel] account of acting for reasons.
+On Butlin's construal, to act for reasons is to select actions via a general-purpose capacity to select actions represented as conducive to one's goals.
+Model-based reinforcement learners maintain a representation of the environmental dynamics: they come equipped with, or learn, the environment's transition function.\footnote{There are in fact two kinds of model-based reinforcement learners. Sampling model-based learners can sample from the transition function, while distribution model-based learners can compute this function. The latter enables much more sophisticated planning than the former, and typically has greater computational complexity. Presumaly, Butlin's discussion refers to distribution model-based learners.}
+When choosing actions, they use their representation of the transition function to compute (an approximation to) the action with the highest value.
+Typically, this is the action they choose to perform.
+According to Butlin, this means that ``they act on representations of facts about transitions in ways which are, in their fundamentals, the same as the way in which humans act on instrumental beliefs'' [CITE Butlin 2024: 32].
+
+Again, it is not clear to me why model-free reinforcement learners fail to meet this condition.
+That an action has a higher expected value than all alternatives seems like a consideration in favor of performing it, and it would seem that it is precisely on the basis of such considerations that model-free reinforcement learners choose actions.
+In other words, they seem to engage in reasoning about which available action is most conducive to their goals.
+Of course, this reasoning is much simpler than the kinds of computations that model-based learners perform: it only involves a comparison operation, whereas model-based decision-making involves tracing the consequences of an action a few steps into the future.
+But Butlin (rightly) does not consider the complexity of the underlying reasoning to make the difference between acting for reasons and (merely) acting.
+
+\subsection{Rational RL}
+
+[CITE: Huttegger 2017] places reinforcement learning in the context of Bayesian decision theory. 
+Hutteger's presentation of reinforcement learning abstracts from almost all algorithmic details, characterizing instead the underlying structure that such algorithms induce on behavior.
+In addition, Hutteger appears to focus on a specific form of reinforcement learning, so-called policy learning (which he calls the ``basic model of reinforcement learning'').
+Most reinforcement learning algorithms learn a good policy by learning accurate state or action values, from which the optimal policy follows (almost) trivially.\footnote{The optimal policy follows trivially from the action values: simply pick the action with the highest value. To compute the optimal policy from state values, the learner needs a (distribution) model of its environment, since it needs to compute the expected value of taking each action in a given state, and doing so requires knowledge of the likely consequences of each action.}
+Policy learners eschew value learning.
+Instead, they assign a score to each possible action in a given state and choose actions with probability proportional to their score.\footnote{[CITE: Sutton and Barto] call this score the \emph{eligibility vector}.}
+Action scores are updated so as to improve the corresponding policy.
+Importantly, an action's score need \emph{not} be that action's value.
+
+Hutteger's main results follow the playbook of \emph{ecological rationality} [CITE: Gigerenzer et al.].
+This school of rational analysis seeks to uncover the conditions under which behavior that might appear, in the abstract, less than ideally rational, is in fact optimal. 
+While these conditions are sometimes taken to lie beyond the agent (in the environment), Hutteger's focus is on internal consistency.
+Thus, he addresses the question, what must an agent believe about his situation for the basic model of reinforcement learning to be an optimally rational way to navigate the world?
+Optimal rationality here is given by Bayesian decision theory.
+
+[Note: I'll explain Huttegger's answer somewhat carelessly, since I don't know how to express it more carefully]
+
+Huttegger's answer is that the basic model of reinforcement learning is optimally rational when the agent's credences satisfy a kind of symmetry called \emph{partial exchangeability}.
+
+\dots
+
+\subsection{RL and resource rationality}
+
+[Explain Icard's take on RL]

@@ -1,0 +1,5 @@
+- connect haas stuff to her metaethics stuff (make scientific these notions)
+- how does haas connect the RL notions to metaethics?
+  - what is the operative concept of probability?
+    - in particular, what norms do they fall under?
+    - how to interpret the state transitions vs the policy probabilities?

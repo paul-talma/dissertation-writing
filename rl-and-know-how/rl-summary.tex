@@ -1,0 +1,212 @@
+\section{Reinforcement Learning}
+
+
+Reinforcement learning is a set of mathematical and computational tools for handling sequential decision problems.
+As a branch of economics and operations research, it is closely related to the study of rational choice behavior and to theories of optimal control.
+As a branch of computer science, it sits alongside supervised and unsupervised learning as one of the methodological pillars of machine machine learning, and lies behing fundamental advances in robotics.
+And as a branch of cognitive science, it stands as one of the best-confirmed computational analyses of human and animal behavior, unifying a wide range of observations and enjoying precisely identified neural correlates.
+
+In this section, I will provide an overview of the reinforcement learning framework and of its use in cognitive science.
+
+\subsection{Reinforcement Learning: the Basics}
+
+I begin with an informal gloss before introducing some technical notions.
+The follwing example does not illustrate all relevant features of reinforcement learning (no single example could), but should serve as a relatively concrete scenario onto which the technical concepts introduced later can be mapped.
+There will, of course, be further examples below.
+
+Suppose that you are trapped in a cage and desirous to escape.
+Around you are various levers, buttons, ropes, springs, and other bells and whistles (your captor turns out to be a certain Rube Goldberg).
+For lack of an obvious way out of the cage, you haphazardly press some buttons and pull some ropes.
+Nothing happens.
+Then, you notice that one of the levers is connected to a latch; you press the lever before twisting a knob coupled to the latch, releasing a marble that rolls down a slide and disloges an iron bar, and you make your escape.
+Unfortunately, a trapdoor opens beneath you, and after a short fall, you find yourself trapped once more in an identical cage.
+This time, however, you waste no time fiddling with the buttons and ropes: you go straight for the lever and the knob, and watch as the marble secures your escape once more.
+Unfortunately, an elaborate contraction of ropes, pulleys, and elastic bands catches you as you step out of the cage and transports you to yet another identical cage.
+This time, curious, you decide to twist the knob without first pressing the lever.
+To your surprise, this suffices to release the marble, which you now watch warily as it rolls down to unlock the door.
+Careful to avoid further any further traps, you make your way out and go on to confront Prof. Goldberg.
+
+This example illustrates several features of the reinforcement learning problem.
+You are an agent, interacting with an environment.
+You have a goal, which is to escape.
+Achieving this goal requires performing specific sequences of actions.
+Each action may have some effect on your environment.
+However, the contribution of any individual action to your goal need not be clear.
+Initially, you try out various actions more or less at random.
+Having found, through trial and error or through careful observation of the cage mechanism, that a particular sequence of actions achieves your goal, you learn to reproduce that sequence in your next escape attempt: you do not need go through a trial-and-error process again.
+However, as your third stint in the cage shows, trial and error still has a role to play.
+By turning the knob without first pressing the lever, you discover that pressing the lever is not necessary to release the marble, thereby finding a more efficient route to your goal.
+
+Abstracting from the details of this example, the core components of an reinforcement learning problem are an environment, an agent acting in that environment, potentially changing the state of and receiving feedback from the environment while working toward a goal.
+Pretty clearly, if the agent is to reliably do well in its pursuit of its goal, it must also be capable of learning from its experiences.
+The reinforcement learning \emph{problem} is to do well in an environment, and \emph{solutions} to this problem come in the form of algorithms for (efficiently) learning from experience within an environment (cf. [CITE: Sutton and Barto, 2].
+In the remainder of this subsection, I will introduce some formalism for characterizing the problem and discuss some solutions to it.
+
+Modern computational reinforcement learning is built upon the notion of a \emph{Markov Decision Process} (MDP).
+An MDP is given by specifying a set $\mathcal S$ of states that the environment can be in, a set $\mathcal A$ of actions that the agent can undertake, a set of rewards $\mathcal R$, and a probabilistic structure dictating how rewards and next states depend on actions and current states.
+Almost invariably, $\mathcal R = \mathbb R$ is the set of real numbers.
+A \emph{trajectory} is a discrete (temporal) sequence of states, actions, and subsequent rewards.
+Moreover, we assume that $\mathcal A$ is at most countably infinite; in almost all cases, it is finite.
+We do not, however, assume that $\mathcal X$ is finite or even countable.
+Some of the most difficult and interesting problems in reinforcement learning arise in the context of vast state spaces.
+
+In general, an agent's actions depends (perhaps probabilistically) on the current state of the environment, and the subsequent reward and environmental state depend (again probabilistically) on the agent's action.
+Thus, state, action, and reward at a given time step are represented by random variables.
+We represent a trajectory as follows:
+\begin{align*}
+	S_0, A_0, R_1, S_1, A_1, R_2, \dots
+\end{align*}
+That is, $S_0$ denotes the initial state of the environment, $A_0$ denotes the first action taken by the agent, $R_1$ denotes the reward received as a result of the agent's first action, $S_1$ denotes the resulting environmental state, and so on.
+
+The environment also specifies the conditional probabilities
+\begin{align*}
+	P(S_{t + 1}, R_{t + 1} | S_t, A_t )
+\end{align*}
+which is the probability distribution over next states and rewards given the agent's action in the current state.
+Crucially, the eponymous Markov property ensures that the effects of an action depend only on the current state of the environment.
+That is,
+\begin{align*}
+	P(S_{t + 1}, R_{t + 1} | S_t, A_t, S_{t - 1}, A_{t - 1}, \dots )  = P(S_{t + 1}, R_{t + 1} | S_t, A_t )
+\end{align*}
+The Markov assumption enforces a kind of locality for the probabilistic (and hence causal) influence of states and actions upon one another.
+Markov processes are thus memoryless.
+
+To illustrate the foregoing, consider the classic gridworld environment [CITE: Sutton].
+
+\begin{center}
+	[insert gridworld pic here]
+\end{center}
+
+The states of the environment correspond to the cells on a grid.
+In each state, the available actions correspond to the four cardinal directions.
+The effect of each action is to move to the adjacent cell in the chosen direction.
+The agent receives a large reward for reaching the goal state, and a small penalty for all other transitions.
+These consequences of the agent's actions are captured in the transition probabilities, which in this case are deterministic (i.e. if the agent chooses to go up, they'll end up in the northern adjacent cell and get negative reward---unless the cell contains the goal---with probability $1$).
+In this example, there is a clear goal state: the only state that rewards the agent for reaching it.
+In other cases, rewards may be more dispersed or continuing [CITE: Abel et al. 2023].
+
+The environment, as defined in the previous few paragraphs, constitutes the decision problem which the agent must solve.
+We now introduce the building blocks of the agent's solution to this problem.
+
+An agent's actions in an environment are guided by a policy $\pi$.
+A policy is a function from states and actions to probabilities: $\pi(s, a) = p$ if the probability of choosing action $a$ in state $s$ is $p$.
+% TODO: link figure
+\begin{center}
+	INSERT GRIDWORLD WITH POLICY
+\end{center}
+Figure 2 displays an example of a (deterministic) policy for the gridworld (arrows determine which action the agent will take in each cell).
+Other policies are obviously possible.
+
+How should policies be evaluated?
+To evaluate policies rigorously, we must 
+
+
+A policy for a given MDP determines a distribution over visited states and action over the course of an episode of interaction with the environment.
+Thus, it induces a distribution over rewards.
+
+%These ``choice probabilities'' raise an interesting question: should we interpret them as subjective degrees of uncertainty, along Bayesian lines, or as objective propensities?\footnote{See [CITE: Luce, Hutteger] on choice propensities.}
+%The reinforcement learning framework is agnostic with respect to this question, which should probably be decided on a case-by-case basis.
+%At any rate, nothing we say will turn on the answer to this question.
+
+TODO:
+\begin{enumerate}
+	\item value functions
+	\item bellman eq
+		\begin{enumerate}
+			\item TD error
+		\end{enumerate}
+	\item algorithms
+		\begin{enumerate}
+			\item policy iteration
+			\item Q learning
+		\end{enumerate}
+	\item model-free and model-based
+		\begin{enumerate}
+			\item contrast Q learning with model-based algo
+		\end{enumerate}
+\end{enumerate}
+
+\subsection{Reinforcement Learning in Cognitive Science}
+
+Reinforcement learning has a long and distinguished history in the cognitive sciences.
+In the early 1980s, computer scientists and cognitive scientists observed that the then-dominant Rescorla-Wagner model of classical conditioning [CITE: Rescorla and Wagner] could be subsumed under the method of temporal differences [CITE: Sutton and Barto 1981].
+
+The development of the temporal difference model of classical conditioning throughout the eighties met with great empirical success.
+The model elegantly unified a variety of puzzling phenomena related to learning.
+For example, while the Rescorla-Wagner model could account for blocking, it did not have the resources to capture higher-order conditioning.\footnotemark
+\footnotetext{Blocking occurs when previously learned associations prevent the formation of new associations.
+For example, suppose an animal has been trained to associate a tone with the delivery of food.
+If the tone is then combined with another stimulus (such as a light) while the rest of the learning setup remains unchanged, the animal will fail to learn an association between the light and the food.
+The prior tone-food association blocks learning a light-food associationl.
+One of the great successes of the Rescorla-Wagner model was its elegant explanation of blocking.
+Roughly, the model posits that learning occurs only when something surprising happens.
+Since in blocking cases, the reward is fully predicted by the tone, its delivery is not surprising.
+There is no surprise ``left over'' to fuel learning of a light-food association, and so the model correctly predicts that learning will not occur.
+
+Higher-order conditioning occurs when an animal forms associations between two stimuli that have not been presented together.
+For example, suppose that an animal is taught a tone-food association and is then repeatedly exposed to a light-tone association (without food delivery).
+The animal exhibits higher-order conditioning if it learns a light-food association.
+Note that the animal has never experienced any (immediate or delayed) connection between light and food.
+However, it has learned that the light is predictive of a tone, which is in turn predictive of food.
+(There are subtleties of experimental design that necessitate great care in setting up higher-order conditioning experiments: since a correlation between light and food would undermine the logic of the experiment, food cannot be presented during the light-tone trials.
+But if tones are presented without being followed by food, the tone-food association undergoes extinction, and becomes unable to support higher-order conditioning.
+Thus, the light-tone trials must be interspersed with tone-food trials.
+But this interleaving now risks introducing some degree of correlation between the light and food, again jeopardizing any inference to true higher-order conditioning.
+Fortunately, statistical methods can be used to confirm that animals indeed undergo higher-order conditioning.)
+}
+By contrast, both blocking and higher-order conditioning are easily seen to be consequences of the same prediction error mechanism at the heart of the temporal difference model.
+
+In addition, the temporal difference model allowed for much greater temporal resolution than existing models.
+Indeed, the basic unit of temporal organization in the Rescorla-Wagner model is the \emph{trial}: during a trial, the animal may be presented with any number of stimuli, separated by various intervals; the model sees learning as updating parameters from one trial to the next.
+As such, it is blind to the finer temporal structure of trials, and cannot model within-trial learning.
+The temporal difference model, by contrast, affords experimenters a fine-grained view into the temporal structure of a single trial.
+As a result, a variety of factors that could not even be expressed in the Rescorla-Wagner model---such as the temporal distance between stimuli (the \emph{interstimulus interval}), temporal overlap and adjacency of stimuli, and various subtle manifestations of blocking---were successfully modeled [CITE: Kehoe, Schreurs, and Graham 1987, Sutton 1984, 1988, Sutton and Barto 1987, 1990].
+In addition, the increased (temporal and conceptual) resolution of the temporal difference model allowed researchers to frame several novel questions (a mark of good science, according to [CITE: Laudan/Lakatos?]): how is the presence or absence of a stimulus across a period of time registered by the animal?
+How are the model parameters (such as learning and decay rates) set?
+And, perhaps most importantly, how is the temporal difference error at the heart of the model computed?
+
+This last question was the focus of a burst of activity in the nineties, when researches observed that midbrain dopaminergic neural activity precisely matched the reward-prediction error associated with a given task [CITE: Montague et al. 1993, Montague et al. 1995, Montague et al. 1994, 1996, Niv 2009].
+The details of this correspondence are not relevant for our purposes.
+It will suffice to note that many core components of temporal difference algorithms were seen to be implemented in the brain: state- and action-value estimates, prediction errors, actor and critic structures, and so on.
+Contemporary research has even found neural support for more advanced forms of reinforcement learning, such as hierarchical reinforcement learning (HRL).
+HRL enriches the basic MDP setup with \emph{options}, which are temporally extended action sequences that the agent can select.
+Implementing an HRL model requires tracking several prediction errors at once, on distinct time scales.
+Empirical support for these relatively sophisticated error signals has been found [CITE: Botvinick et al. 2009, Botvinick 2012, Diuk et al. 2013].
+
+[contemporary questions in neuroscientific RL research: locating the neural substrates of various components of RL algorithms (actor and critic, value functions, model-based vs model-free adjudication, information gain)]
+
+Reinforcement learning ourgrew its behaviorist roots through the development of \emph{model-based} reinforcement learners.
+Recall that a model is, formally speaking, a conditional probability distribution over next states (and possibly rewards), given the current state and action taken.
+A learner is said to be model-based if it uses a model in order to learn how to act.
+Models have been associated with cognitive maps: representations of the agent's environment whose format mirrors the spatial structure of the environment [CITE: Tolman 1948, Daw et al. 2005, Rescorla 2009, Chrisippus].
+We shall examing in detail the representational credentials of model-based reinforcement learning below.
+For now, we detail some uses of the distinction between model-based and model-free learning in the cognitive literature.
+
+The model-based/model-free distinction is used to explain the distinction between \emph{habitual} and \emph{goal-directed} action [CITE: Dayan, Niv, etc.].
+The habitual/goal-directed distinction is itself operationalized using the notion of \emph{outcome devaluation sensitivity}.
+A type of behavior is sensitive to outcome devaluation if information about the value of the consequences of a choice influences that choice.
+For example, consider the following experiment.
+[CITE: who did this again?] taught rats that lever presses lead to food through standard instrumental conditioning protocol.
+They then fed food to the rats freely, in an environment devoid of levers.
+At the same time, the test subjects were injected with a nausea-inducing drug.
+Upon returning to their original lever environment with the levers disconnected to reward, the rats pressed the lever less often (you would expect this anyway, since the lever is no longer connected to anything valuable, but as it turns out, the poisoned rats' rate of lever-pressing decreased faster than that of non-poisoned rats).
+
+In this experiment (and many others like it [CITE: Drummond and Niv, Dolan and Dayan 2013]), the rats' behavior exhibits sensitivity to outcome devaluation: if an outcome (food) is devalued (by associating it with nausea), the rats are less likely to choose actions leading to this outcome.
+But notice that at no point do the rats experience any association between lever pressing and nausea.
+Lever presses are only ever followed by either pleasant experiences (food in the first phase) or neutral experiences (nothing in the third phase).
+For their nauseated states to influence their lever-pressing, the rats would need to associate lever-pressing with the receipt of food, and the consumption of food with nausea.
+That is, they would need a rudimentary world model---a mental structure that registers the transition and reward structure of their environment---and a way to use this model to bring future outcomes to bear on their current decision to press the lever.
+[how to justify the "goal-directed" terminology? Honestly I'm not sure there's a clear sense in which model-based behavior is goal-directed while model-free is not; rather, they're both goal-directed, but model-based learning is immediately responsive to goal changes, while model-free learning needs to visit the environment to implement the necessary changes.]
+
+
+
+%Notice that the rats at no point experienced an association between lever presses and nausea.
+%Thus, Q-learning algorithms would lead the rats to continue pressing the lever, at least for a while.
+%Intuitively, if the rats' learning was responsive only to past action rewards, their unpleasant experiences following eating the food should have no effect on their rates of lever pressing: that they got sick after eating the food in no way changes the fact that lever-pressing has led to good outcomes in the past.
+%To connect lever presses to nausea, it seems that the rats would need to connect lever presses with food and food with nausea. 
+%But this goes beyond merely keeping track of the average reward that has historically followed an action (again, this connection is not affected by the association of food with nausea).
+%It requires tracking the (likely) effects of one's pulling the lever and updating one's estimate of action values on the basis of the value of their outcomes.
+%That is, it requires a model, and sensitivity to changes in the value of outcomes.
+%
+%In such experiments, the rats' behavior is sensitive to outcome devaluation. 
+

@@ -1,0 +1,20 @@
+\section{RL and representation learning}
+
+In this section, we cover some of the connections between reinforcement learning and \emph{representation learning}.
+Representation learning is an interdisciplinary area of research spanning machine learning and cognitive science, focused on elucidating representational structure and the ways such structures can be learned from experience.
+
+Representation learning is particularly relevant to reinforcement learning for two reasons.
+First, applications of reinforcement learning to real-world scenarios face a scaling challenge.
+As the size of the state and action spaces increases, the task of finding an optimal, or nearly optimal, policy becomes computationally intractable.
+This is because in such environments, states are rarely visited more than once, and often not at all.
+Moreover, when a state is visited, only one out of several possible actions is taken.
+Thus, even with extensive exploration, the agent cannot sample but a tiny fraction of the problem space, and hence cannot form well-informed value estimates.
+
+Unfortunately, most real-world applications of reinforcement learning, whether natural or artificial, face intractable problem spaces [CITE: Gershman and Daw 2017, others].
+Indeed, sensory stimulations are usually continuous and high-dimensional, defining uncountably infinite state-spaces.
+Likewise, at any given time, the agent faces a vast range of possible actions.
+Straightforward reinforcement learning algorithms are essentially powerless in the face of this complexity.
+
+Representation learning helps to tame this complexity by learning efficient ways of summarizing information about the problem.
+In particular, representation learning can help the agent manage the size of the state space, by learning useful groupings of states.
+It can also help manage the size of the action space, by 

@@ -1,0 +1,40 @@
+\section{Reinforcement Learning and Abstraction}
+
+
+The methods described in the previous section form the theoretical core of reinforcement learning, providing clear and tractable models of learning and action.
+Their simplicity enables theoretical guarantees of convergence and straightforward algorithmic implementations. 
+However, these methods face two problems: a scale problem and an observability problem.
+This section begins by briefly explaining the scale and observability problems.
+They will turn out to be closely related, and hence to call for similar solutions, which we will examine in turn.
+
+\subsection{The scale problem}
+
+The planning and learning algorithms we have so far considered all take roughly the same form: act in your environment, mostly doing the best you can, but occasionally trying new things.
+Judiciously chosen update rules will, over time, lead you to develop accurate estimates of the value of the actions available to you, and you will prosper.
+Key to this scheme is that in order to update the value of a state and an action, that state must be visited and that action must be taken (if only mentally).\footnote{Model-based methods require care here. Although a model-based learner can update the value of a state without literally (i.e. physically) visiting it, it must nonetheless ``visit'' that state in thought, incurring some computational cost for each state whose value it wishes to update. The capacity to update state values without visiting them has significant advantages. But the same basic computational considerations canvassed below apply: if there are too many states, it will be impossible to iterate over all of them in thought in a reasonable amount of time.}
+Such methods are successful in the environments we have so far considered, in which it is feasible to visit all states and try out each action.
+For example, a gridworld might contain about a hundred states, in each of which the agent can take up to four actions.
+As the state and action spaces grow, however, the information flow becomes increasingly sparse, relative to the problem space.
+In the limit, for infinite (and especially uncountably infinite) action spaces, the proportion of states and actions that the agent can experience vanishes to zero.
+
+Unfortunately, most real-world applications of reinforcement learning, whether natural or artificial, face intractable problem spaces [CITE: Gershman and Daw 2017, others].
+Indeed, sensory stimulations are usually continuous and high-dimensional, defining uncountably infinite state-spaces.
+Likewise, at any given time, the agent faces a vast range of possible actions.
+Straightforward reinforcement learning algorithms are essentially powerless in the face of this complexity.
+
+\subsection{The observability problem}
+
+A closely related problem is that the agent may receive incomplete information about its environment.
+In standard formulations of the reinforcement learning problem, everything relevant about environmental state is given to the agent.
+To be precise, at any given point, the agent has the state $s$ available in decision-making and in learning procedures, and, in accordance with the Markov property, this state is precisely what determines the dynamics of the environment from that point on.
+But this assumption is often unrealistic.
+Even if the environment is indeed Markovian (often itself a simplifying assumption), the agent may not have access to all the properties of a given state upon which the Markovian dynamics depend.
+This situation is well modeled by \emph{partially observable Markov decision prcesses} (POMDPs).
+In this setup, instead of being given the state of the environment at each step, the state generates an \emph{observation}.
+While the underlying states are Markovian, the observations need not be.
+In particular, two distinct states, with different transition dynamics, may generate the same observation.
+
+\section{Solutions to the problems}
+
+The scale problem can be addressed through
+

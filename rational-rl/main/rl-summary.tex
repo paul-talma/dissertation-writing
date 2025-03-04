@@ -1,7 +1,106 @@
 \section{Reinforcement Learning}
 
-As [CITE: Sutton and Barto] point out, reinforcement learning comprises (a) a problem statement, (b) a set of techniques for solving that problem, and (c) the field of computer science that primarily studies (a) and (b).
-As a problem statement, reinforcement learning is a way of analyzing sequential decision making.
-An agent must act in an environment.
-The agent's choices may impact the environment 
+Broadly speaking, reinforcement learning models agents learning to do the best for themselves as they interact with their environment.
+I begin to sharpen this characterization by explaining reinforcement learning from a computational perspective, before discussing its use in cognitive science.
+
+\subsection{Reinforcement Learning in Computer Science}
+
+Reinforcement learning models decision-making problems that have a certain mathematical structure: Markov Decision Processes (MDPs).
+An MDP consists of an agent interacting with an \emph{environment.}
+At any point, the environment is in one of a range of possible \emph{states} and the agent can perform an \emph{action} from a set of alternatives.
+The agent's action may affect the environment, resulting---perhaps probabilistically---in a \emph{next state} and occasioning---perhaps probabilistically---a \emph{reward}.
+The reward is modeled as a simple numerical signal.
+The agent's goal is to accummulate as much reward as possible over the course of its interaction with its environment.
+More precisely, its goal is to maximize its \emph{expected return}, defined as the expected value of its cumulative, discounted rewards.
+This expected return is a function of the environmental dynamics and of the agent's \emph{action policy}.
+This policy specifies---perhaps probabilistically---what action the agent takes in any given state.
+Traditionally, reinforcement learning methods specify how the agent's policy evolves as a result of its experience.
+Crucially, the environment is memoryless: by the titular Markov property, the distribution of next states depends only on the current state and the action taken by the agent in it.
+History plays no direct role in the dynamics of MDPs.\footnote{This is also true of the agent, relative to a given policy: policies are also memoryless. But of course, the point is that the agent's policy evolves as a result of its experience, so that the distribution of actions does change over time.}
+
+We may associate to each state its \emph{value} under a given policy, which is the return we expect the agent to reap if it started in this state and followed the policy.
+Likewise, we may associate to each state-action pair its value under a policy.
+This is the return we expect the agent to get if it started in this state, took that action, and followed the policy from then on.
+Although many reinforcement learning algorithms require the agent to maintain an estimate of one of these value functions, this is not strictly required.
+But even if the agent makes no use of these functions, they remain sensible objects for us theorists to analyze.
+
+The Markov property is of fundamental importance to reinforcement learning, since it grounds the so-called Bellman recurrence.
+To explain this recurrence, we introduce a bit of notation.
+
+The set of actions is denoted $\mathcal A$ and the set of states is denoted $\mathcal S$.
+We think of an episode of interaction with the environment as a sequence $S_0, A_0, R_1, S_1, A_1, \dots$ of random variables, with the state variables $S_i$ taking values in $\mathcal S$, the action variables $A_i$ taking values in $\mathcal A$, and the reward variables $R_i$ taking values in the real numbers $\mathbb R$.
+By the Markov property, $S_{t + 1}$ and $R_{t + 1}$ are independent of the entire history of the episode, conditional on the values of $S_{t}$ and $A_{t}$.
+In other words, the distribution over histories is entirely determined by the conditional distribution $P(S_{t + 1}, R_{t + 1} | S_t, A_t)$.
+The agent's policy is denoted $\pi(a | s) = P(A_t = a | S_t = t)$, and the notation is meant to remind us that the agent's actions depend only on the current state.
+$G_t$ is the (discounted) sum of the agent's rewards, starting at time $t$.
+Finally, we let $v_\pi (s)$ denote the value of state $s$ under policy $\pi$ and $q_\pi(s, a)$ denote the value of the state-action pair $(s, a)$. 
+
+Now, we are in a position to exhibit the Bellman recurrence:
+\begin{align*}
+	v_\pi(s) 
+	&= 
+	\mathbb E [G_t	| S_t = s]\\
+	&= \mathbb E [ R_{t + 1} + \gamma R_{t + 2} + \dots  | S_t = s]\\
+	&= \mathbb E [ R_{t + 1} + \gamma (R_{t + 2} + \gamma R_{t + 3} + \dots | S_{t} = s]\\
+	&= \mathbb E [R_{t + 1} + \gamma G_{t + 1} | S_t = t]\\
+	&= \sum_a \pi(a | s) \sum_{s\prm, r} p(s\prm, r | s, a) \left[r + \gamma \mathbb E [G_{t + 1} | S_{t + 1} = s\prm] \right] \\
+	&= \sum_a \pi(a | s) \sum_{s\prm, r} p(s\prm, r | s, a) [r + \gamma v_\pi (s\prm)]
+\end{align*}
+Thus, the value of a state is the expected reward from being in this state plus the value of the expected next state.
+Note that the value function occurs on both sides of the identity.
+%TODO: explain how this derivation uses the markov property.
+A similar equation can be derived for action values.
+
+Many reinforcement learning algorithms use the Bellman recurrence to learn a policy.
+As such, the Bellman recurrence is of central importance to reinforcement learning.
+It is easy to show that there is exactly one function, the true value function, satisfying the recurrence.
+For any other putative value function, there will be a difference between its estimate of the value of $s$, on the one hand, and the expected next reward plus the estimated value of the expected next state on the other.
+This difference is called the \emph{temporal difference error}, and is denoted $\delta$:
+\begin{align*}
+	\delta = R_{t + 1} + \gamma V(S_{t + 1}) - V(S_t)
+\end{align*}
+This quantity plays an important role in the most distinctive reinforcement learning algorithms, as well as in many applications of the framework to cognitive and neuroscience.
+Its importance owes to the fact that nudging the estimated value of a state in the direction of the prediction error brings the estimate closer to the truth.
+
+The point of reinforcement learning, however, is not to learn the value of states or actions, but to learn how to act---to learn a policy.
+If we have a reasonably accurate value function, however, we can improve our policy, by choosing actions that are more likely to lead to high-value states (this is called making our policy more \emph{greedy}).
+Note that the value of a state depends on the operative policy, while the policy in turn depends on the distribution of value across states.
+Updating our value estimate may lead us to revise our policy, which may in turn cause us to update our value estimate, and so on.
+Remarkably, under mild conditions, various versions of this basic strategy converge upon an optimal policy---one that achieves the highest possible expected return in the given the environment.
+
+Among these conditions, the most important is that each state is visited at least once.
+This requirement induces a dilemma between \emph{exploration} and \emph{exploitation}.
+An agent exploits when it takes what it estimates to be the best action in a give state.
+In exploration, the agent foregoes the action with maximal expected return in favor of one with lower expected return.
+This apparent deviation from decision-theoretic norms is justified by the fact that the agent's value estimates may be unreliable, being formed on the basis of too little evidence.
+Only by exploring widely enough can the agent be confident in its picture of the world and in its plans for navigating it.
+
+Computationally, there are many ways to ensure that the agent explores in a sensible way.
+The most straightforward is to simply have the agent perform a random action some small fraction of the time.
+It is then advisable to reduce this fraction over time: as the agent's policy converges to the optimal one, it has less and less need to deviate from it in search of alternatives.
+A more sophisticated way to encourage exploration, and a potentially more psychologically realistic one, is to reward information gain.
+To do so, the agent tracks its uncertainty about its value estimates, often by simply counting the number of times it has visited---and hence gotten information about---each state or state-action pair.
+Actions associated with high uncertainty are then deliberately overvalued, and hence more likely to be selected.
+
+These strategies are interesting, in that they reveal that choosing the worse action, or over-estimating the value of a state, can be not only beneficial but also necessary to achieve the distal goal of acting optimally or accurately valuing each state.
+Exploration takes on a particularly important role in \emph{non-stationary} environments, in which the environmental dynamics evolve over time.
+In such environment, a perfectly accurate value function at one time may be drastically mistaken a few time steps later---think of a fallen tree blocking what used to be the fastest route home.
+Frequent and continuing exploration is often more appropriate in such a setting.
+
+%TODO: explain q learning?
+%TODO: add more examples.
+
+\subsection{Reinforcement Learning in the Cognitive Sciences}
+
+Since the mid-nineties, reinforcement learning has enjoyed considerable explanatory success in the cognitive and neural sciences.
+In the late eighties and early nineties, the framework was found to elegantly explain and unify an array of results on animal learning that the then-prevalent conditioning paradigm struggled to accommodate.
+These successes were soon followed by the discovery that the algorithmic structures posited by reinforcement learning had close neural correlates.
+
+[TODO: explain connection between TD learning and classical conditioning]
+
+[TODO: give a sense for the breadth of contemporary psych using RL]
+
+[TODO: overview of role of RL in neuroscience]
+
+
 

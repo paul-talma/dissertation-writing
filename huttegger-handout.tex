@@ -1,0 +1,154 @@
+\documentclass{my-tufte}
+
+\usepackage{amsmath}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[RE,LO]{Huttegger---Probabilistic Foundations}
+\fancyfoot[C]{\thepage}
+
+
+
+\title{Huttegger (2017) --- The Probabilistic Foundations of Rational Learning}
+
+\begin{document}
+
+\maketitle
+
+\section{Project Overview}
+
+Huttegger aims to develop a general theory of rational learning, anchored in Bayesian rationality but extending to other learning procedures.
+
+Bayesianism is here identified with a theory about the degrees of belief of a rational agent. On this theory, 
+\begin{enumerate}[(i)]
+	\item a rational agent's degrees of belief are probabilities,
+	\item a rational agent \textbf{conditionalizes}, that is, updates his degrees of belief according to Bayes' rule.
+\end{enumerate}
+However, following (ii) can be quite difficult. In particular, if we represent inductive learning scenarios as infinite sequences of learning events, then computing a distribution over all possible outcomes is ``forbiddingly complex.''\footnote{Huttegger does not spell out the sense in which this is ``forbiddingly complex.'' All he says is that ``without any principles that guide the assignment of probabilities [to Borel subsets of $\mathcal N$], it seems that finite minds could never be modeled as rational epistemic agents'' (25). What exactly is the problem here? That pure Bayesianism insufficiently constrains the choice of distribution? That computing the probability of certain events, given an assignment to the clopens, is computationally too demanding (in what sense)?}
+
+In response, we might wish for simple analytic expressions for one's conditional distributions. To derive such expressions, we must make \textbf{inductive assumptions} about the learning scenario.
+
+The basic schema of Huttegger's project is thus:
+\begin{center}
+	Bayesianism + inductive assumptions $\implies$ simple learning rule\footnote{In instantiating this schema below, we'll omit the ``Bayesianism'' part.}
+\end{center}
+In practice, he treats the inductive assumptions as an unknown, assumes a learning rule popular in e.g. reinforcement learning, and solves for the unknown.
+
+The upshot is a
+\begin{quote}
+	qualified and local justification of inductive inference [...] A method for updating beliefs\footnote{Other than conditionalization, presumably.} [...] is never unconditionally justified, but only justified with respect to an underlying set of inductive assumptions. (30)
+\end{quote}
+
+In fact, learning methods are not only justified but rationally required:
+\begin{quote}
+	The epistemological significance of [these results] is that [they] provide us with a position from which to make evaluative claims about epistemic agents. In particular, we would call an agent irrational if, on the one hand, she fails to update according to [a given learning method], but, on the other, she has beliefs that conform to the [method's inductive assumptions]. The agent is irrational because her method of updating does  not pull in the same direction as her fundamental assumptions about the learning situation. (53)
+\end{quote}
+
+\section{Chapter 1}
+\[
+\underbrace{\left \{ \begin{array}{l}
+		\text{Exchangeability,}\\
+		\text{Sufficientness}
+	\end{array} \right \}}_{\text{inductive assumptions}}
+	\implies
+	\underbrace{\text{generalized succession rule}}_{\text{learning rule}}
+\]
+
+\textbf{Exchangeability:} The order of observations does not matter to the agent:
+\[
+P(x_1, \dots, x_n) = P(x_{\pi(1)}, \dots, x_{\pi(n)})
+\]
+for all permutations $\pi$.\footnote{Huttegger does not seem to want to discuss the rationality of inductive assumptions. He sticks instead to conditional judgements of (ir)rationality. But can we say anything about the conditions under which an agent is rational to believe that, e.g., the order in which observations are received does not matter? It seems like we could easily precisify the coin flip example to make such an assumption either warranted or unwarranted.}
+
+\textbf{Sufficientness:} The conditional probability of an observation is a function (solely) of the number of times this observation has been observed and the total number of observations:
+\[
+	P(X_{n+1} = i | X_1, \dots, X_n) = f_i(n_i, n)
+\]
+where $n_i$ is the number of times outcome $i$ has been observed. In other words, $(n_i, n)$ is a \textbf{sufficient statistic} for $X_{n+1}$.
+
+If the agent's credences satisfy exchangeability and sufficientness, then if the agent conditionalizes, his conditional probabilities follow the
+
+\textbf{Generalized succession rule:}
+\[
+	p(X_{n + 1} | X_1, \dots, X_n) = \frac{n_i + \alpha_i}{n + \sum_j \alpha_j}
+\]
+
+\section{Chapter 2 --- Bounded Rationality}
+In which we combine prediction with action. We now assume that at each time, the agent can choose to take some action $A_i$ from a set of alternatives indexed by $[k]$. The agent is assumed to predict the state of the environment---he has a learning rule---and to make decisions based on these predictions---he has a decision rule.
+
+We also assume that the agent has limited information about his environment.
+
+\textbf{Fictitious play:} combines the generalized succession learning rule with the ``maximize immediate expected utility'' decision rule. The utility of taking an action $A$ in state $S$ is assumed to be deterministic and given by $u(A \land S)$.\footnote{Is the assumption of determinism part of the agent's inductive assumptions? Or is it a modeling choice made by the theorist? Or \dots?} The expected utility of $A$ at stage $n+1$ is
+\[
+\sum_i u(A \land S_i) \frac{n_i + \alpha_i}{n + \sum_j \alpha_j}
+\]
+where $n_i$ is as before the number of times state $S_i$ has been observed.
+
+Although he is not fully explicit, it seems that we have:\footnote{Note that this is (only) a convergence result: in the limit, the agent learns the probabilities of the states, and hence maximizes expected utilities.}
+\[
+\left \{ \begin{array}{l}
+		\text{Exchangeability,}\\
+		\text{Sufficientness,}\\
+		\text{Maximizing expected utility}
+	\end{array} \right \}
+	\implies
+	\text{fictitious play}
+\]
+Fictitious play embodies boundedness assumptions in that the agent is assumed to only maximize his expected immediate payoff (as opposed to e.g. (discounted) long-term returns).\footnote{See p. 33.}
+
+\textbf{Bandit problems:} We omit a general description of bandit problems. We simply note that they embody a different boundedness assumption: the states are identified with probability distributions over payoffs, and are assumed not to be directly available to the agent (who only directly accesses the payoffs).
+
+\textbf{Aside: Model-based and Model-free Reinforcement Learning}
+
+The RL literature draws a distinction between model-based and model-free learning algorithms.
+
+A \textbf{model} of the environment is a mechanism that allows one to make inferences about how the environment will behave: how its state will evolve over time (perhaps as a result of the agent's actions, perhaps stochastically) and what payoffs actions taken in a given state will yield.
+\begin{itemize}
+	\item \emph{distribution models} allow one to compute the full joint distribution of states and payoffs given actions.
+	\item \emph{sample models} allow one to sample a trajectory through state space according to the true distribution.
+\end{itemize}
+A model-based algorithm can use the model to explore alternative possibilities and plan. A model-free algorithm cannot, and must rely on what it can observe: the correlations between actions, states (if observable) and payoffs.
+
+Whether a model of the environment is available to the agent depends at minimum on the agent's representational resources. Thus the distinction is important for thinking about bounded rationality. However, I am not sure how it maps onto the various algorithms that Huttegger discusses.
+
+\textbf{The basic model of reinforcement learning}
+
+\begin{itemize}
+	\item Each act $A_i$ has a \textbf{propensity} $Q_i(n)$ of being chosen at stage $n$.
+	\item Propensities determine \textbf{choice probabilities}:
+	\[
+		P_i(n) = \frac{Q_i(n)}{\sum_j Q_j(n)}
+	\]
+	\item Propensities are updated using
+	\[
+		Q_i(n+1) = \left \{ \begin{array}{ll} Q_i(n) + \pi(n) & \text{if $A_i$ is chosen at stage $n$}\\ Q_i(n) & \text{otherwise} \end{array} \right .
+	\]
+	\item Note that this introduces stochasticity in the choice of action (comparable to softmax decision rule in many RL algorithms).
+\end{itemize}
+We have:
+\[
+\left \{ \begin{array}{l}
+		\text{Luce's Choice Axiom,}\\
+		\text{Commutativity}
+	\end{array} \right \}
+	\implies
+	\text{basic model}
+\]
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

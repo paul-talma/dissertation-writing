@@ -1,0 +1,57 @@
+\section{Model-free and model-based RL}
+
+The distinction between model-free and model-based reinforcement learning is important.
+Roughly, model-based reinforcement learning considers learners possessing a \emph{model} of their environment.
+Formally, a model is a way of computing the environment's transition function: the distribution of next states, conditional on current state and action.
+Informally, a model is an agent's capacity to encode or represent the statistical structure of its environment.\footnote{I do not mean to suggest that a model \emph{only} encodes information about statistical structure. For example, a model may also encode causal structure.}
+Even more informally, a model encodes an agent's ``beliefs'' about the consequences of its actions (in a context).
+% TODO: this will have to be explained differently, calling it belief is way too misleading. Put in terms of committal representations or something
+A model-based learner is a learner with access to a model; a model-free learner is one without such access.
+
+Model-free techniques usually maintain a value for state-action pair.
+Decision making is then computationally trivial: in a given state, simply choose the action with highest value.
+Action values are learned by trial-and-error: when an action is chosen, its consequences are observed, and its value estimate is updated in light of these consequences. 
+A key feature of model-free reinforcement learning is that action value estimates can only be updated as a result of choosing that action: some association between the action and its consequences must be experienced in order for learning to occur.
+
+Model-based reinforcement learning can overcome this limitation.
+An agent equipped with a model can use the model to compute the likely consequences of its actions and update their estimated values accordingly, without needing to undertake these actions.
+Models free agents of the ``tyranny of experience.''
+Concretely, models make feasible a range of computational approaches to a problem that is inaccessible to model-free learners.
+For example, a model-based agent can plan several steps ahead, using its model to compute the likely consequences of its actions.
+Alternatively, a model-based agent can work backward from its goal to devise a route without needing to traverse said route.
+Of course, none of this is to say that a model-based agent has no need for experience.
+For one thing, animals do not usually come to a task with a pre-existing model of the environment: the model must be learned through experience.\footnote{Although that learning may itself be biased by prior expectations over possible environments, a possibility we will examine below.}
+Relatedly, real-world environment are typically dynamic.
+For example, weather events may render impassable what was once a straightforward path to a food cache.
+In order to allow continued success in the face of such changes, the agent's model must be periodically checked against the environment.
+
+By contrast, a model-free 
+
+In my informal gloss, I stated that a model encodes or represents the environment's statistical structure.
+Philosophers usually draw a distinction between one state carrying information about another, and a state representing another.
+Information carrying is a purely correlational notion: state $a$ carries information about state $b$ if the mutual information between the two states is nonzero.\footnote{The mutual information between $X$ and $Y$ is the reduction in uncertainty about the value of $X$ that results from learning the value of $Y$ (or conversely). These ideas are made precise in the field of information theory.}
+By contrast, a state is a representation if it has \emph{veridicality conditions}: conditions under which the state is true or accurate.
+Do models merely carry information about the statistical structure of the environment, or do they represent that structure?
+Answering this question requires taking a close look at specific model-based reinforcement learning agents.
+As we will see, the models employed by model-based learners need not be representational---but some are.
+
+The distinction between model-based and model-free learning is important to reinforcement learning as a computational discipline: as just mentioned, the two are characterized by different algorithms, with distinct advantages and disadavantages.
+But the distinction is also important to the use of reinforcement learning models in cognitive science.
+There, it is used to elucidate the difference between so-called \emph{habitual} and \emph{goal-directed} behavior.
+
+Acrosss a range of \emph{devaluation studies}, scientists have identified two classes of behavior: devaluation-insensitive (\emph{habitual}) and devaluation-sensitive (\emph{goal-directed}) behavior.
+Devaluation studies proceed in three stages, which I will illustrate using a representative study.
+In the first stage, rats held in an enclosed environment are made to learn (through trial-and-error) that a certain sequence of actions (pressing a lever followed by a button) leads to a desirable outcome (food pellets).
+In the second stage, that outcome is devalued: rats are freely fed poisoned pellets, leading to nausea after consumption.\footnote{Devaluation may also be achieved by changing the state of the rat from hungry to sated. There are subtle differences between the effects of these devaluations, but they do not matter for our expository purposes.}
+At the end of the second stage, the rats have been conditioned not to want the pellets: they do not eat them even when freely available.
+Then, in the third stage, the rats are placed back in their original environment, and their behavior is observed.
+Strikingly, the rats continue to press the lever, but they do not go on to press the button.
+This pattern is observed on the very first trial of the third stage.
+Thus, despite having never experienced any association between button-pressing and nausea, the rats learn not to press the button.
+But this learning does not extend to their earlier choice to press the lever.
+
+This suggests that the rats press the lever out of habit, without taking into account the long-term consequences of doing so.
+By contrast, the rats' decision to press the button appears to be sensitive to the consequences of that choice: since its consequences are no longer viewed as valuable, the button is not pressed.
+
+These behavioral differences are well-modeled using the distinction between model-free and model-based reinforcement learning.
+
