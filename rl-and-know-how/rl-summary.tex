@@ -44,9 +44,8 @@ In the remainder of this subsection, I will introduce some formalism for charact
 
 Modern computational reinforcement learning is built upon the notion of a \emph{Markov Decision Process} (MDP).
 An MDP is given by specifying a set $\mathcal S$ of states that the environment can be in, a set $\mathcal A$ of actions that the agent can undertake, a set of rewards $\mathcal R$, and a probabilistic structure dictating how rewards and next states depend on actions and current states.
-Almost invariably, $\mathcal R = \mathbb R$ is the set of real numbers.
 A \emph{trajectory} is a discrete (temporal) sequence of states, actions, and subsequent rewards.
-Moreover, we assume that $\mathcal A$ is at most countably infinite; in almost all cases, it is finite.
+Moreover, we assume that $\mathcal A$ and $\mathcal R$ are at most countably infinite; in almost all cases, they are finite.
 We do not, however, assume that $\mathcal X$ is finite or even countable.
 Some of the most difficult and interesting problems in reinforcement learning arise in the context of vast state spaces.
 
@@ -85,9 +84,30 @@ These consequences of the agent's actions are captured in the transition probabi
 In this example, there is a clear goal state: the only state that rewards the agent for reaching it.
 In other cases, rewards may be more dispersed or continuing [CITE: Abel et al. 2023].
 
-The environment, as defined in the previous few paragraphs, constitutes the decision problem which the agent must solve.
-We now introduce the building blocks of the agent's solution to this problem.
+The foregoing concludes the formal definition of an MDP.
+The MDP characterizes the decision problem which the agent must solve.
+Before discussing solutions to this problem, it is worth reflecting on the scope and nature of this modeling choice.
+As Sutton and Barto write in their reference textbook,
+\begin{quote}
+	The MDP framework is abstract and flexible and can be applied to many different problems in many different ways.
+	For example, the time steps need not refer to fixed intervals of real time; they can refer to arbitrary successive stages of decision making and acting.
+	The actions can be low-level controls, such as the voltages applied to the motors of a robot arm, or high-level decisions, such as whether or not to have lunch or to go to graduate school.
+	Similarly, the states can take a wide variety of forms.
+	They can be completely determined by low-level sensations, such as direct sensor readings, or they can be more high-level and abstract, such as symbolic descriptions of objects in a room.
+	%Some of what makes up a state could be based on memory of past sensations or even be entirely mental or subjective.
+	%For example, an agent could be in the state of not being sure where an object is, or of having just been surprised in some clearly defined sense.
+	%Similarly, some actions might be totally mental or computational.
+	%For example, some actions might control what an agent chooses to think about, or where it focuses its attention.
+	%In general, actions can be any decisions we want to learn how to make, and states can be anything we can know that might be useful in making them.
 
+	\hfill 
+	[CITE: Sutton and Barto, 50]
+\end{quote}
+%Reinforcement learning has flourished in fields as diverse as game-playing [CITE: Mnih et al. 2015], robot navigation [CITE: Tang et al. 2024], the control of plasma flows in fusion reactors [CITE: Degrave et al. 2022], and SAT-solvers [CITE: Fournier 2022].
+% TODO: finish
+[say something about the range of application of RL, the reward hypothesis, and the markov assumption.]
+
+We now introduce the building blocks of the agent's solution to the sequential decision problem posed by an MDP.
 An agent's actions in an environment are guided by a policy $\pi$.
 A policy is a function from states and actions to probabilities: $\pi(s, a) = p$ if the probability of choosing action $a$ in state $s$ is $p$.
 % TODO: link figure
@@ -98,31 +118,102 @@ Figure 2 displays an example of a (deterministic) policy for the gridworld (arro
 Other policies are obviously possible.
 
 How should policies be evaluated?
-To evaluate policies rigorously, we must 
+Policies are evaluated with respect to the agent's goals.
+The agent's goal is to maximize its \emph{return}.
+The return is a technical notion, but it is intuitively related to utility.
+It is defined as the agent's cummulative discounted reward.
+Consider an agent interacting with an MDP and generating a sequence of rewards
+\begin{align*}
+	R_1, R_2, \dots
+\end{align*}
+The cummulative reward is simply the sum of these individual rewards:
+\begin{align*}
+	\sum_{t = 0}^\infty R_{t + 1}
+\end{align*}
+For various reasons, it is advisable to discount later rewards.\footnote{There are mathematical reasons to discount: doing so ensures that the cummulative discounted reward is finite, and hence mathematically tractable.
+There are also ecological considerations: discounting by a fixed factor $\gamma$ is equivalent to terminating the learning episode with probability $1 - \gamma$ at each step.
+Since the possibility of termination is always present in natural environments (a hawk might swoop down at any moment, or the environment might shift, so as to introduce a new learning situation) it is reasonable to build it into the framework.
+Note that the undiscounted case (which can be tractable in certain cases) is a special case of the discounted case with $\gamma = 1$.
+}
+Thus, we consider the return:
+\begin{align*}
+	G := \sum_{t = 0}^\infty \gamma^t R_{t + 1}
+\end{align*}
+Now, the actual return depends on the actual sequence of rewards which the agent experiences.
+Different choices of actions will in general lead to different sequences of reward.
+The same action taken in the same state may result in a different next state, due to the stochastic nature of the environment.
+And even when the same action in the same state leads to the same next state, the rewards might be different.
+Thus, the actual return depends probabilistically on both the environmental dynamics and on the agent's policy (as we would expect).
+To account for this dependence, we consider a policy's \emph{expected return}:\footnote{A policy and an MDP define a probability distribution over returns. Discounting is needed to ensure that this distribution has an expectation.}
+\begin{align*}
+	\mathbb E_\pi [G] = \mathbb E \left [ \sum_{t = 0}^\infty \gamma^t R_{t + 1} | \pi \right ]
+\end{align*}
+The agent's goal is to do as well as possible for itself in its environment.
+Given the environment's ineliminable stochasticity, we formalize the agent's goal as that of finding a policy with maximal expected return.
+And in general, we consider policies with higher expected returns to be better than ones with lower expected return.
 
+A crucial tool in evaluating policies are \emph{value funtions}.
+There are two sorts of value function: state value functions and action value functions.
+In both cases, the value of an action or state is closely tied to return: it is the return that can be expected, in the long-run, when starting in that state or taking that action.
+Note that since the return depends on the agent's policy, so do value functions.
+We denote the value of a state $s$ under policy $\pi$ by $v_\pi(s)$ and the value of taking action $a$ in state $s$ by $q_\pi(s, a)$.
+Note that the value of an action is \emph{not} the reward that results from taking that action (in a given state).
+As an estimate of return, value is sensitive to long-run consequences, whereas rewards are inherently local, attaching to particular actions in particular states independently of their connection to other states.
 
-A policy for a given MDP determines a distribution over visited states and action over the course of an episode of interaction with the environment.
-Thus, it induces a distribution over rewards.
+Intuitively, if the agent's goal is to maximize expected return, then it should seek to perform high-value actions (alternatively, it should seek high-value states, but we will focus on action for simplicity).
+There are two subtleties with this picture, and they drive the development of the most fundamental reinforcement learning algorithms.
+The first is that action values are, at least initially, not known to the agent.\footnote{I am using ``know'' in a maximally loose sense here, for ease of exposition.}
+Indeed, action values are expectations over (potentially) infinite sequences of rewards, the calculation of which is anything but trivial and requires information (such as transition probabilities between states) that may in any case not be available to the agent.
+Thus, if the agent is to select actions based on their value, it must have a way of estimating these values on the basis of its experience in its environment: it needs to learn action values from experience.
+
+Second, action values depend in general on the agent's policy.
+If the agent modifies its policy, for example after learning that a given action has a high value, this change could in principle modify the value of that very action, rendering the updated policy worse than the original one.
+In fact, this cannot happen: improving a policy ``locally,'' by swapping a lower-value action for a higher-value one, can only improve the one's expected return.
+This result is known as the \emph{policy improvement theorem}.\footnote{A rigorous statement and proof sketch can be found in [CITE: Sutton and Barto: 78].}
+
+Although local improvements to the policy cannot make it worse, such improvements usually change the value of other actions and states.
+For example, consider the following toy environment:
+\begin{center}
+	INSERT SIMPLE DECISION TREE
+\end{center}
+Clearly, the optimal policy (in a sense to be made precise below) is to first go left in state $s_1$, then go right in state $s_2$.
+Suppose that $\pi_1$ goes left in state $s_2$.
+The value of going left in state $s_1$, conditional on following $\pi_1$, is low, since doing so will be followed by another left turn, and hence a low reward.
+Suppose now that the agent learns that going right in state $s_2$ in fact has greater value, and so updates to a policy $\pi_2$, which is like $\pi_1$ except that it goes right in state $s_2$.
+By the policy improvement theorem, $\pi_2$ is better than $\pi_1$ (as can be easily checked manually).
+Notice also that the value of going left at $s_1$ is much greater under $\pi_2$ than under $\pi_1$.
+Importantly, however, we have so far left it open whether the agent is sensitive to this fact.
+Learning the value of going right in $s_2$ under $\pi_1$ (i.e. $q_{\pi_1}(s_2, \texttt{right})$) is quite distinct from learning the value of going left at $s_1$ under $\pi_2$ (i.e. $q_{\pi_2}(s_1, \texttt{left})$).
+And until this new value is learned, the agent's estimate of action values in state $s_1$ will be mistaken, relative to the new policy $\pi_2$.
+
+Thus, although the first remark above points to the need for learning action values (or related quantities, such as state values), the second shows that such learned values may be invalidated as soon as they are used---as they should be---to improve one's policy.
+This tension suggests that whatever method we use to learn action values should not be too costly, as we might need to re-learn these values as soon as our estimates are used to improve our policy.
+
 
 %These ``choice probabilities'' raise an interesting question: should we interpret them as subjective degrees of uncertainty, along Bayesian lines, or as objective propensities?\footnote{See [CITE: Luce, Hutteger] on choice propensities.}
 %The reinforcement learning framework is agnostic with respect to this question, which should probably be decided on a case-by-case basis.
 %At any rate, nothing we say will turn on the answer to this question.
 
+State and action values obey a consistency condition called the \emph{Bellman recurrence}:
+\begin{align*}
+	v_{\pi}(s) = \sum_a \pi(s, a) \sum_{s\prm, r} p(s\prm, r | s, a) [r + \gamma v_\pi(s\prm)]
+\end{align*}
+This states that the value of state $s$ under policy $\pi$ is identical to the expected immediate reward associated with being in state $s$ and following $\pi$, plus the value of the resulting state $s\prm$.
+Intuitively, present value is one-step reward plus subsequent value.
+A similar equation holds for action values, according to which the value of a given action in a given state is the expected reward of taking that action plus the value of the expected action in the resulting state.
+
+The Bellman equation is of fundamental importance to reinforcement learning.
+It enables an iterative approach to learning values and policies that elegantly bypasses the concerns raised in the previous paragraphs.
+In the next few paragraphs, we present a widely-known and illustrative algorithm that leverages the Bellman recurrence to learn an optimal policy.
+
+
 TODO:
 \begin{enumerate}
-	\item value functions
-	\item bellman eq
-		\begin{enumerate}
-			\item TD error
-		\end{enumerate}
 	\item algorithms
 		\begin{enumerate}
+			\item explore exploit
 			\item policy iteration
 			\item Q learning
-		\end{enumerate}
-	\item model-free and model-based
-		\begin{enumerate}
-			\item contrast Q learning with model-based algo
 		\end{enumerate}
 \end{enumerate}
 
@@ -176,8 +267,59 @@ Empirical support for these relatively sophisticated error signals has been foun
 [contemporary questions in neuroscientific RL research: locating the neural substrates of various components of RL algorithms (actor and critic, value functions, model-based vs model-free adjudication, information gain)]
 
 Reinforcement learning ourgrew its behaviorist roots through the development of \emph{model-based} reinforcement learners.
-Recall that a model is, formally speaking, a conditional probability distribution over next states (and possibly rewards), given the current state and action taken.
-A learner is said to be model-based if it uses a model in order to learn how to act.
+As Sutton and Barto put it, a model
+\begin{quote}
+	is something that mimics the behavior of the environment, or more generally, that allows inferences to be made about how the environment will behave.
+	For example, given a state and action, the model might predict the resultant next state and next reward.
+	Models are used for \emph{planning}, by which we mean any way of deciding on a course of action by considering possible future situations before they are actually experienced.
+	
+	\hfill [CITE: Sutton and Barto: 7]
+\end{quote}
+Minimally, a model must track the environmental dynamics, and be usable in deciding what to do.
+Two important classes of models are \emph{distribution models} and \emph{sampling models}.
+A distribution model takes the form of an algorithm, which when given a state $s$, an action $a$, a next state $s\prm$, and a reward $r$, outputs a probability $p$ of transitioning to $s\prm$ and receiving reward $r$ upon taking action $a$ in $s$.
+That is, a distribution model is a way of computing some $p(s\prm, r | s, a)$ for all relevant values of $s\prm, r, s,$ and $a$.
+By contrast a sampling model is an algorithm that on input $s$ and $a$ outputs a next state $s\prm$ and reward $r$ with some probability $p$.
+Intuitively, a sampling model encodes a distribution, but only implicitly: it does not make the transition probabilities available for further computation [CITE: Rescorla, "Neural Implementation of Bayesian Inference"].
+The distribution encoded by a sampling model is the obvious one: it assigns probability $p$ to the transition $s, a \to s\prm, r$.
+Either kind of model can be used to plan, though they necessitate different algorithms.
+
+For a simple example, consider [Example of planning with a model].
+
+%Intuitively, a model is a way of computing the environmental dynamics: it specifies the likely consequences of the agent's actions across all possible states.
+%Although in the strict sense, a model computes the true distributions, it is useful to relax this assumption: in this weaker sense, a model is a way of computing \emph{a} probability distribution over next states and rewards, for each state and action---it is not required that these distributions be the same as the environmental distributions.
+%A model, then, is any algorithm that functions to implement the environmental dynamics, even if it fails to do so.
+%A learner is said to be model-based if it uses a model (in the weak sense) in order to learn how to act.
+%It is important to operate with the weaker notion of model, so that agents may have imperfect models that they improve through experience.
+
+Model-based reinforcement learning supports a kind of behavioral flexibility unavailable to model-free learners.
+To see this, consider the following environment.
+
+\begin{center}
+	[INSERT 3-WAY PATH HERE]
+\end{center}
+
+This environment consists of three paths to the goal, with a reward of $1$ for reaching the goal and a reward of $-1$ for each other time step.
+Thus, the agent does best by taking the shortest path (namely A) to the goal.
+Now suppose that some obstruction is introduced at the end of path A, blocking the path to the goal.
+Note that this obstruction also blocks the intermediate path B.
+Suppose a model-based learner encounters this obstruction while traveling down path A and updates its environmental model to reflect the change.
+If the agent is placed in the starting state again, it will directly go for the longest path C.
+This is because, when deciding which path to take, the learner can look ahead at the consequences of taking each path.
+Doing so reveals that both path A and B are now very inefficient ways to reach the goal, and that path C is now the most direct route to the goal.
+
+By contrast, a model-free learner, having encountered the obstruction at the end of path A, would take path B if placed in the starting state.
+This is because the model-free learner can only update its estimate of action values by taking these actions and observing their consequences.
+Since it did not yet encounter the obstacle after choosing path B, the learner cannot update its estimate of the value of that path.
+Thus, path B will now appear to be better than path A and path C.
+Only once path B has been taken and found to be obstructed will the agent learn the correct value for B, and ultimately choose C.
+
+This example illustrates that model-based learners can respond flexibly to changes in the causal dynamics of their environment.
+Similar examples show that the same is true of changes in the rewards associated with outcomes.
+Model-based learning is freed from the need to experience transitions in order to learn their values.
+The model supports a kind of generalization, whereby information acquired through one experiential trajectory bears on decisions independent of that trajectory.
+
+
 Models have been associated with cognitive maps: representations of the agent's environment whose format mirrors the spatial structure of the environment [CITE: Tolman 1948, Daw et al. 2005, Rescorla 2009, Chrisippus].
 We shall examing in detail the representational credentials of model-based reinforcement learning below.
 For now, we detail some uses of the distinction between model-based and model-free learning in the cognitive literature.
@@ -195,8 +337,10 @@ In this experiment (and many others like it [CITE: Drummond and Niv, Dolan and D
 But notice that at no point do the rats experience any association between lever pressing and nausea.
 Lever presses are only ever followed by either pleasant experiences (food in the first phase) or neutral experiences (nothing in the third phase).
 For their nauseated states to influence their lever-pressing, the rats would need to associate lever-pressing with the receipt of food, and the consumption of food with nausea.
-That is, they would need a rudimentary world model---a mental structure that registers the transition and reward structure of their environment---and a way to use this model to bring future outcomes to bear on their current decision to press the lever.
-[how to justify the "goal-directed" terminology? Honestly I'm not sure there's a clear sense in which model-based behavior is goal-directed while model-free is not; rather, they're both goal-directed, but model-based learning is immediately responsive to goal changes, while model-free learning needs to visit the environment to implement the necessary changes.]
+That is, they would need a rudimentary environment model---a mental structure that tracks the transition and reward structure of their environment---and a way to use this model to bring future outcomes to bear on their current decision to press the lever.
+[how to justify the "goal-directed" terminology? Honestly I'm not sure there's a clear sense in which model-based behavior is goal-directed while model-free is not; rather, they're both goal-directed, but model-based learning is immediately responsive to goal changes, while model-free learning needs to visit the environment to implement the necessary changes. Need to think more about whether the cog sci terminology is just misleading, or reflects a deeper contrast.]
+
+
 
 
 

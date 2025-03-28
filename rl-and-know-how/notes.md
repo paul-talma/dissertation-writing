@@ -6,3 +6,13 @@
         - 
 
 - What aspects of the choice situation do MDPs model?
+
+- multiagent  RL
+- summer school on RL
+- psych lit critcal of RL
+- value assertions/propositional?
+- puzzle: why is the model-based argument so much better than the modelf-free argument?
+
+
+Dayan and Niv (2008) on discounting
+Temporal discounting: a recurrent controversy involves the way that the utilities of proximal and distant outcomes are weighed against each other. Exponential discounting, similar to a uniform interest rate, has attractive theoretical properties, notably the absence of intertemporal choice conflict, the possibility of recursive calculation scheme and simple prediction errors [1]. However, the more computationally complex hyperbolic discounting, which shows preference reversals and impulsivity, is a more common psychological finding in humans and animals [61].
