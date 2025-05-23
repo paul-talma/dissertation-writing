@@ -1,0 +1,97 @@
+\section{RL and Marr's Levels}
+
+Contemporary reinforcement learning models are computational models.
+These models are presented at various levels of explanatory grain, following Marr's three levels [CITE: Marr 1982, Niv and Langdon 2016].
+In most studies, the model specifies various quantities computed by the agent.
+For example, many models posit that agents maintain an estimate of action values (a $Q$-function).
+In addition, a model may posit that the agent estimates the variability in outcome attaching to actions, or the uncertainty associated with each state.
+In any case, a central part of most reinforcement learning models is a specification of the functions computed by the agent.
+
+More ambitiously, the model may specify how the agent computes these values or functions.
+For example, the model may specify that action values are learned according to one of various iterative algorithms for value learning, such as $Q$-learning [CITE: Watson and Dayan 1992] or SARSA [CITE: Sutton and Barto].
+We must be careful not to read too much into the choice of algorithm.
+In some cases, the choice of algorithm is a core commitment of the model.
+In others, it is a mere convenience.
+
+Indeed, some studies are aimed at determining which of several competing algorithms are used by a given agent [CITE].
+In such cases, it is reasonable to take a realist stance on specific aspects of the algorithm.
+For example, estimating the value of an action using SARSA involves sampling a ``next action.'' 
+The $Q$-learning algorithm is exactly the same, except that instead of sampling a next action, the agent considers the action with the highest estimated value among possible next actions.
+And the Expected-SARSA algorithm is like $Q$-learning, except that instead of considering the maximal value achievable by the next action, it considers the expected value of the next action.
+Thus, where SARSA samples, $Q$-learning takes a $\max$ operation, and Expected-SARSA takes an expectation.
+These algorithmic details entail behavioral and computational differences and require different cognitive capacities (for example, Expected-SARSA, but not the others, requires the agent to take an expectation over actions, and hence to maintain a probability distribution over actions).
+Determining which algorithm an agent uses is therefore a reasonable experimental goal.
+In such contexts, the success of a $Q$-learning model over a SARSA model provides \emph{prima facie} evidence that the agent implements the $Q$-learning algorithm, and in particular that the agent computes a maximum operation.
+
+In other contexts, however, this realist interpretation is unwarranted.
+For example, many studies target the question whether the agent employs model-based or model-free reinforcement learning [CITE: Daw, Niv, and Dayan, Drummond and Niv, Momennejad et al.].
+In model-based reinforcement learning, the agent has access to a model of the causal or statistical structure of its environment.
+Typically, the agent learns this model over the course of its interactions with the environment and uses it to plan; the model itself is learned from experience, usually through association.
+In model-free reinforcement learning, the agent lacks a model.
+Instead, it (usually) caches estimates of the value of different actions and uses these action values to choose actions.
+
+Both model-based and model-free reinforcement learning can be implemented via a wide range of algorithms (the three mentioned in the previous paragraph are all model-free algorithms; see [CITE: Sutton and Barto] for a small taste of the diversity of reinforcement learning algorithm).
+In studies designed to tease apart model-based and model-free methods, experimenters sometimes choose specific algorithmic implementations of each method in order to derive behavioral predictions.
+However, no effort is made to comprehensively search over different model-based and model-free algorithms to find the best fit.
+It is assumed (reasonably) that the behavioral differences predicted by model-based and model-free methods are robust to the choice of underlying algorithm.
+Indeed, in other such studies, no algorithm is proposed, and the behavioral differences between model-free and model-based reinforcement learning are instead characterized qualitatively.
+For example, a hallmark of model-free learning is its insensitivity to \emph{outcome devaluation}: model-free learners will continue to pursue actions that have led to reward in the past, in spite of the fact that they now lead to undesirable (or not desirable) consequences.
+This difference arises from the structure of model-free and model-based learning and does not require experimenters to choose specific algorithmic implementations of either kind of learning.
+That a model-free method is a better fit than a model-based one on a given task thus lends virtually no support to a realist interpretation of the distinctive features of the chosen model-free algorithm (if any).\footnote{Does it provide \emph{any} support? Perhaps. But not enough to put much weight on the algorithmic details.}
+
+The takeaway is that there is no automatic inference from the use of a particular algorithm in a reinforcement learning model to the psychological reality of the processes postulated by that algorithm.
+This is not to say that such inferences are never warranted: often they are.
+But the warrant depends on the explanatory use of the algorithm's features.
+If the distinctive features of the $Q$-learning algorithm play a role in explaining the behavioral or neural data, then it is reasonable to take a realist stance toward these features.
+
+The two explanatory ambitions I have discussed thus far---ascribing the computation of a function and describing how that function is computed---correspond to Marr's computational and algorithmic levels of explanation.\footnote{The nomenclature is unfortunate: all three levels are computational in the sense of describing computational processes and providing computational explanations.
+``Functional'' might be a better term for the so-called computational level.
+And I am not sure that the algorithmic and implementational levels can always be cleanly distinguished; for one thing, what looks like implementation at one level is often algorithmic at another (see [CITE: Rueckl 1991: Connectionism and the notion of levels] for elaboration).
+But the distinction remains useful, and the terminology has stuck, so we follow the literature.}
+% TODO: Maybe say something more thoughtful here about the levels.
+
+Finally, and most ambitiously, cognitive scientists may seek to identify neural correlates of key algorithmic quantities or operations.
+Indeed, much of the early enthusiasm for reinforcement learning models owes to the discovery of specific neural mechanisms realizing a key quantity at the heart of many model-free algorithms: the \emph{temporal difference} (TD) error.
+
+The TD error is the difference between the agent's estimates of an action's value, $Q(a)$ and a bootstrapped estimate $B(a)$ of that value (in reality, action value estimates are indexed to the current state $s$; we suppress the state parameter for simplicity).
+$Q(a)$ is the agent's estimate of the value of action $a$ at a given time $t$.
+The bootstrapped estimate is like the agent's estimate, except that it incorporates feedback from the environment.
+By incorporating this feedback, the bootstrapped estimate is statistically less biased than the original estimate.
+Most model-free reinforcement learning algorithms therefore push the agent's estimate $Q(a)$ in the direction of the bootstrapped estimate.
+To do so, they compute $B(a) - Q(a)$, the (signed) distance between the current estimate and the bootstrap.
+This difference is the TD error.
+It is an \emph{error} insofar as the bootstrap estimate is statistically closer to the true value of the action than the estimate $Q(a)$.\footnote{To be precise, unless the agent's estimate $Q(a)$ is already accurate, the expected value of the bootstrap estimate is closer to the true action value than $Q(a)$ is.}
+Intuitively, a positive TD error indicates that the action is turned out to be better than expected; the good news causes the learner to revise its estimate upwards (and conversely in the case of a negative TD error).
+
+The TD error is perhaps the most fundamental algorithmic idea in reinforcement learning.
+It allows for a simple iterative computation of action values (and from there of optimal policies) that relies only on locally available information: the reward obtained at that time step.
+As Sutton and Barto explain in their popular textbook,
+\begin{quote}
+	If one had to identify one idea as central and novel to reinforcement learning, it would undoubtedly be \emph{temporal difference} (TD) learning.
+
+	\hfill [CITE: Sutton and Barto: 119]
+\end{quote}
+In particular, TD errors are at the heart of $Q$-learning and the actor-critic algorithms, arguably the two most influential model-free reinforcement learning algorithms.
+
+[[Explain connection between TD error and domapine; neural realization of actor-critic algorithm]]
+
+If there is evidence of brain regions implementing reinforcement learning algorithms, that is of course reason to take reinforcement learning models realistically.
+Unfortunately, however, the neurological evidence regarding the implementation of these algorithms is not as clear-cut as one might have hoped.
+The brain, as it turns out, is a complicated organ.
+This complexity gives rise to several difficulties:
+[draft]
+\begin{itemize}
+	\item
+		It is difficult to get very reliable evidence about the function of a given neural population.
+
+	\item
+		It is difficult to unambiguously interpret such evidence as one can get (even if we had noiseless data about the firing pattern of a given neuronal cluster, it may be very difficult to know why they exhibit this pattern, or what that pattern is for).
+
+	\item 
+		The brain probably does not implement ``pure'' reinforcement learning.
+		That is, if some form of reinforcement learning is implemented in the brain, it likely does not have the form of the ``textbook'' presentations of reinforcement learning.
+		For example, the brain may be computing several reward signals at once, tracking different values and playing different computational roles.
+		These refinements can be incorporated into the general machinery of reinforcement learning, but doing so might require conceptual developments in reinforcement learning itself (e.g. consider the introduction of task construals)
+\end{itemize}
+These points do not support an anti-realist stance about the use of reinforcement learning models.
+But they do show that one has to exercise cautious judgement in making inferences from the use of reinforcement learning in psychology and neuroscience to the existence of a given computational structure in a mind or brain.

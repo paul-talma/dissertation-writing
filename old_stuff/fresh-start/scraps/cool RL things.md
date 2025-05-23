@@ -50,3 +50,4 @@
     - They should steer the agent toward the goal, but they shouldn't come to supplant it.
         - One behavioral trap: getting stuck chasing subtask reward instead of main task reward.
 
+

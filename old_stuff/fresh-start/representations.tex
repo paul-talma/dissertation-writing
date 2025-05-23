@@ -1,0 +1,41 @@
+\section{RL and representation}
+
+\subsection{Representation of actions}
+
+An RL agent must take an action at each time step.
+(We continue to use the anthropomorphic term ``action'' without thereby ascribing agency to RL systems in any interesting sense.\footnote{Though see [CITE: Butlin 2020, 2024] for an argument that RL systems are agents in a non-trivial sense.}
+Recall also that an action, in the RL framework, can be just about anything.)
+Learning to choose good actions is the main point of RL algorithms.
+We therefore consider the question whether the agent must represent its own actions.
+As we will see, in some but not all cases, a representation of actions is necessary for learning.
+
+Before getting into it, let us clarify the question.
+What would it mean for an RL agent to represent its actions?
+Representations are commonly understood as states with content.
+While there is no consensus regarding the nature and function, contents are minimally seen as providing \emph{veridicality conditions} for mental states and as accounting for \emph{rational relations} among mental states.
+Veridicality conditions are, roughly speaking, conditions that the world, or some part of the world, must meet to satisfy a representation with that content.
+For example, the belief that the mean temperature in Los Angeles in July is 95F has as content the proposition that the mean temperature in Los Angeles in July is 95F.
+This content determines conditions on the world which must be met if the belief is to be true.
+Namely, the content determines that the belief is true if and only if the mean temperature in Los Angeles in July is 95F.
+
+[not sure I want to make the point about rational relations, actually.
+The idea is that content is invoked in psychological explanations (e.g. belief-desire psychology, but also elsewhere).
+Maybe note in passing that this role requires a relatively fine-grained notion of content, because of Frege cases.]
+
+An action representation is unlikely to possess the same kind of content as a belief.
+For one thing, the content of an action representation specifies an action type, not a state of the world.
+[Actually, what's the truth here? Do action representations represent actions, or states of affairs in which the actions are performed (by the agent?)?]
+More importantly, an action representation is connected to action in a more direct way than beliefs are.
+An action representation functions to initiate action.
+When all goes well (in particular, when downstream systems ``cooperate''), an action representation issues in action.
+By contrast, a belief, even a belief that it would be good to do a given action, has no such direct connection to action.
+% TODO: fix this
+[Well, we have to be careful: an action representation doesn't function to issue in action whenever it's tokened---only when tokened ``decisively'' (e.g. when passed downstream to generate the action). But the point is that there is such a think as tokening an action representation decisively, whereas there is no such thing for belief.]
+
+[Also lots to say here about how actions in RL differ from action representations in other domains, e.g. motor control/motor representations.]
+
+[...]
+
+The point of most RL algorithms is to learn a good policy.
+...
+\subsection{Representations of Value}

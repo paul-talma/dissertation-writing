@@ -1,0 +1,88 @@
+
+These capacities are systemstically related.
+The capacity to interpret a piano piece, for example, depends, both for its acquisition and exercise, on a capacity to play the piano.
+In turn, this capacity depends on a range of lower-level capacities for, e.g., coordinated movement.
+
+Selection is central to all of these capacities.
+They all call for selecting a course of action from a range of alternatives.
+To play a trill, for example, the right muscles in the right fingers must be made to move at the right velocity, at the right time, with the right cyclic behavior, and so on.
+Any such combination of parameters is, typically, only one among many possible combinations.
+And typically, successful parameter combinations are sparse among these possibilities: there are many more ways not to play a trill than there are of playing one.
+To make matters more difficult, the parameters that lead to successful action are context-dependent: a trill on a cheap electric keyboard requires different muscle activations than one on a B\"osendorfer.
+Possessing such a capacity requires a way of reliably solving this selection problem.
+But there are different ways of solving the selection problem, and the differences matter.
+In particular, a longstanding question concerns the kinds of mental representations involved in the possession and exercise of practical capacities (if any).
+% TODO: something here is not clicking.
+
+I will argue that reinforcement learning provides a powerful perspective from which to think about practical capacities and related notions.
+
+\section{Knowing-how}
+
+Ryle [CITE: Ryle] argues that practical activity does not require for its ``intelligent'' performance that the agent grasp a proposition.
+Contra Ryle, Stanley and Williamson [CITE: S\&W] argue that knowing how to do something consists in knowing some related propositions---and a fortiori, requires grasping a proposition.
+In particular, it requires knowing, of some way of doing an action, that it is a way of doing that action.
+
+But what of the dogs?
+Dogs know how to catch frisbees, but their grasp of propositions remains contentious. 
+As many philosophers have pointed out, Stanley and Williamson's so-called \emph{intellectualism} threatens to over-intellectualize know-how, requiring more representational firepower than is available to some bona fide knowers-how.
+
+In this section, I seek to buttress these objections to intellectualism by considering the reinforcement learning paradigm.
+In a nutshell, my argument will be that reinforcement learning can explain the possession of certain practical capacities, and that these explanations do not involve anything like propositional knowledge.
+
+\subsection{Intellectualism}
+
+Before developing the objection, let us paint the target more carefully.
+Intellectualism, in its baldest contemporary form, is the following view ($\varphi$ ranges over actions):
+\begin{quote}
+	\textsc{Intellectualism:} knowing how to $\varphi$ consists in knowing, of some way $w$, that $w$ is a way of doing $\varphi$; moreover, $w$ is grasped under a practical mode of presentation.
+\end{quote}
+[CITE: SW, Pavese]
+We will be interested in a related question: whether knowing how requires propositional knowledge (that $w$ is a way to $\vaprhi$).
+Note that a negative answer to this question (which I hope to provide) contradicts intellectualism: if know how consists in propositional knowldge, then it certainly requires propositional knowledge.
+
+Intellectualism is quite strong: it requires knowers-how not only to be able to grasp propositions, but also to grasp them under a specific mode of presentation, and to know them (this was, nonetheless, Ryle's original target [CITE: Ryle]).
+It will therefore be worthwhile to lay out a few weaker variants that preserve some of the spirit of the view.
+
+The first variant maintains the requirement that some way of $\varphi$ing be represented, but drops the requirement that it be represented as part of a proposition (and hence that such proposition be grasped or known). It is also stated as a necessary condition rather than as a constitutive claim, as the necessity will be our main concern.
+\begin{quote}
+	\textsc{Way-representationalism:} knowing how to $\varphi$ consists in representing a way of $\varphi$ing, though this way need not be represented as part of a proposition.
+\end{quote}
+
+
+
+
+
+
+\section{Sharpening the question}
+
+My claim is that tools and results from reinforcement learning can shed light on philosophical questions concerning practical capacities.
+In particular, one of the lessons to be drawn from the reinforcement learning literature is that possessing a practical capacity to do something---knowing how to do that thing---does not require very sophisticated cognitive capacities.
+This conclusion is in line with so-called ``anti-intellectualist'' views.
+But the battle lines in the war between intellectualists and anti-intellectualists have been unhelpfully drawn.
+Before arguing that a close look at computational cognitive science lends support to (a certain brand of) anti-intellectualism, it is therefore necessary to clear some ground.
+This is the purpose of the present section.
+
+The debate about the nature of our practical capacities begins, at least in contemporary analytic philosophy, with [CITE: Ryle], and has largely revolved around the nature of know-how.
+Ryle argued for two claims: first, the negative thesis that knowing how to do something is not a matter of having some (relevant) propositional attitudes, and second, the positive thesis that knowing how to do something is a matter of having a (reliable, trainable, somewhat general) disposition to do that thing.
+The target of the first thesis has come to be called \emph{intellectualism}, while the latter thesis goes under the name \emph{anti-intellectualism}.\footnote{This is regrettable, since the denial of intellectualism does not entail anti-intellectualism so-defined.
+Anti-intellectualism should probably have been called ``dispositionalism'' instead.
+The nomenclature suggests that intellectualism and anti-intellectualism jointly exhaust the alternatives, when clearly they do not.}
+%These two theses have served as attractor basins, around which a variety of related views have circled since their introduction in 1945.
+
+The foregoing uses the slippery phrase ``is (not) a matter of.''
+To gain clarity on the debate, we will need to be more precise about the content of the intellectualist and anti-intellectualist theses.
+We can make some progress by distinguishing various questions to which the theses might provide answers:
+\begin{enumerate}
+	\item What kind of mental state (if any) is the state of knowing-how?
+	\item What grounds the possession of knowledge-how?
+	\item What are necessary and sufficient conditions on possessing knowledge-how?
+	\item What are the semantics of know-how ascriptions?
+\end{enumerate}
+To a first approximation, intellectualist answers to these questions are as follows: 
+\begin{enumerate}
+	\item [1.i] Knowing-how to $\varphi$ is a species of propositional knowledge, consisting in knowing that such-and-such is a way to $\varphi$.
+	\item [2.i] Possession of knowledge-how is grounded in having a relevant set of propositional attitudes.
+	\item [3.i] Possessing a relevant set of propositional attitudes is necessary and sufficient for possessing knowledge-how.
+	\item [4.i] Sentences like ``Jane knows how to bike'' are true just in case Jane has a relevant set of propositional attitudes.
+\end{enumerate}
+
